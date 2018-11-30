@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header class="header">
+      <el-header class="header" :height="480">
          <l-header></l-header>
       </el-header>
       <el-main>
@@ -17,6 +17,7 @@
 <style lang="less" scoped>
   .header{
     padding:0;
+    height:auto;
   }
 </style>
 

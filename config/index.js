@@ -11,10 +11,6 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/backend': {
-        target: 'http://aftersale.111.com.cn/',
-        pathRewrite:{'^/backend': ''}
-      }
     },
 
     // Various Dev Server settings
