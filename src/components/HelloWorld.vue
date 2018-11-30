@@ -10,7 +10,7 @@
     </li>
   </ul>
 </template>
-<style lang="css" scoped>
+<style lang="less">
     ul{
         list-style: none;
     }
