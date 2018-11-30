@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header>
-        头部
+      <el-header class="header">
+         <l-header></l-header>
       </el-header>
       <el-main>
         <router-view/>
@@ -14,10 +14,18 @@
     
   </div>
 </template>
+<style lang="less" scoped>
+  .header{
+    padding:0;
+  }
+</style>
 
 <script>
+import Header from './components/header';
 export default {
-  name: 'App'
+  name: 'App',
+  components:{'l-header':Header}
+  
 }
 </script>
 

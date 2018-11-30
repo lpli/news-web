@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <li v-for="item in items" class="article-li">
+    <li v-for="item in items" class="article-li" >
         <div class="article-title-left">
           <img :src="item.thumbnail_pic_s" class="article-img">
         </div>
