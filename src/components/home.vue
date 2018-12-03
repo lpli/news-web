@@ -1,14 +1,18 @@
 <template>
-  <ul>
-    <li v-for="item in items" class="article-li" >
-        <div class="article-title-left">
-          <img :src="item.thumbnail_pic_s" class="article-img">
-        </div>
-        <div class="article-title-right">
-          <span>{{item.title}}</span>
-        </div>
-    </li>
-  </ul>
+  <div>
+    <img-news>
+    </img-news>
+    <ul>
+      <li v-for="item in items" class="article-li" >
+          <div class="article-title-left">
+            <img :src="item.thumbnail_pic_s" class="article-img">
+          </div>
+          <div class="article-title-right">
+            <span>{{item.title}}</span>
+          </div>
+      </li>
+    </ul>
+  </div>
 </template>
 <style lang="less">
     ul{
@@ -31,8 +35,12 @@
 </style>
 
 <script>
+import ImgNews from '@/components/img-news';
 export default {
-  name: "HelloWorld",
+  name: "Home",
+  components:{
+    'img-news':ImgNews
+  },
   data() {
     return {
       items: [
