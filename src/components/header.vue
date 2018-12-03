@@ -4,12 +4,12 @@
       <el-col :span="20"></el-col>
     </el-row>
     <el-row class="header-search">
-      <el-col :span="4" :offset="5">
-        <img :src="logo" height="30">vuejs
+      <el-col :span="3" :offset="5">
+        <img :src="logo" height="40">
       </el-col>
-      <el-col :span="10">
+      <el-col :span="8">
         <el-input placeholder="请输入内容" class="input-search" type="text">
-          <el-button slot="append" icon="el-icon-search" type="primary"></el-button>
+          <el-button slot="append" type="primary">搜索</el-button>
         </el-input>
       </el-col>
     </el-row>
@@ -47,16 +47,17 @@
 .el-input__inner {
   border-radius: 0;
 }
-.el-tabs{
+.el-tabs {
 }
 </style>
 
 <script>
+import Logo from "../assets/logo_one.png";
 export default {
   name: "l-header",
   data() {
     return {
-      logo: "https://cn.vuejs.org/images/logo.png",
+      logo: Logo,
       activeName: "second"
     };
   },
