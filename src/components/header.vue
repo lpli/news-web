@@ -6,7 +6,7 @@
       </el-col>
     </el-row>
     <el-row class="header-search">
-      <el-col :span="3" :offset="5">
+      <el-col :span="2" :offset="4">
         <img :src="logo" height="40">
       </el-col>
       <el-col :span="8">
@@ -59,12 +59,19 @@
 }
 
 .header-search {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top:30px;
+  padding-bottom: 30px;
 }
 
 .el-input__inner {
-  border-radius: 0 !important;
+  border-radius: 0;
+}
+
+.el-input-group__append{
+  border-radius:0;
+}
+.el-button{
+  border-radius:0;
 }
 
 
@@ -78,13 +85,13 @@ export default {
   data() {
     return {
       logo: Logo,
-      activeIndex: 1
+      activeIndex: '1'
     };
   },
   mounted() {},
   computed: {},
   methods: {
-    handleClick(tab, event) {
+    handleSelect(tab, event) {
       console.log(tab, event);
     }
   }
