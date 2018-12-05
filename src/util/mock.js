@@ -18,4 +18,47 @@ const produceNewsData = function() {
     return articles;
 }
 
+
+var pageCount = Random.integer(1, 10);
+var ids = 10000; //自增长id
+var bookListTemplate = {}; //数据模板
+function mockPage(currPage){
+    if (currPage === pageCount) {
+        bookListTemplate = {
+            'totalPage': pageCount,
+            'pageNo':currPage,
+            'list|1-10': [ //最后一页的数据在1-10的区间产生
+                {
+                    'id|+1': ids,
+                    'title': '@ctitle(5, 15)',
+                    'desc': '@cparagraph(2, 5)',
+                    'img': Random.image('200x100', Random.color()), //经测试MockRandom.dataImage()无效,看了下源码，是有该函数的 - 下的mockjs@1.0.1-beta3包
+                    'time': Random.now('yyyy-MM-dd')
+                }
+            ]
+        }
+    } else {
+        bookListTemplate = {
+            'totalPage': pageCount,
+            'pageNo':currPage,
+            'list|10': [ //有分页的时候一页10条数据
+                {
+                    'id|+1': ids,
+                    'title': '@ctitle(5, 15)',
+                    'desc': '@cparagraph(2, 5)',
+                    'img': Random.dataImage('200x100', Random.color()), //经测试MockRandom.dataImage()无效,看了下源码，是有该函数的 - 下的mockjs@1.0.1-beta3包
+                    'time': Random.now('yyyy-MM-dd')
+                }
+            ]
+        }
+    }
+    return Mock.mock(bookListTemplate);
+}
+
+
 Mock.mock('/news/index', 'post', produceNewsData);
+Mock.mock('/news/list','post',function(options){
+    let params = JSON.parse(options.body);
+    let data =  mockPage(params.page);
+    return data;
+});
