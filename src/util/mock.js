@@ -7,16 +7,56 @@ const produceNewsData = function() {
     let articles = [];
     for (let i = 0; i < 4; i++) {
         let newArticleObject = {
-            title: Random.csentence(1, 10), //  Random.csentence( min, max )
-            thumbnail_pic_s: Random.dataImage('100x68', 'mock的图片'), // Random.dataImage( size, text ) 生成一段随机的 Base64 图片编码
+            title: Random.ctitle(5, 20), //  Random.csentence( min, max )
+            img: Random.dataImage('100x68', Random.color()), // Random.dataImage( size, text ) 生成一段随机的 Base64 图片编码
             author_name: Random.cname(), // Random.cname() 随机生成一个常见的中文姓名
             date: Random.date() + ' ' + Random.time() // Random.date()指示生成的日期字符串的格式,默认为yyyy-MM-dd；Random.time() 返回一个随机的时间字符串
         }
         articles.push(newArticleObject)
     }
  
-    return articles;
+    return {
+        list:articles,
+        big:{
+            title: Random.ctitle(5, 20), //  Random.csentence( min, max )
+            img: Random.dataImage('100x68',Random.color()), // Random.dataImage( size, text ) 生成一段随机的 Base64 图片编码
+            author_name: Random.cname(), // Random.cname() 随机生成一个常见的中文姓名
+            date: Random.date() + ' ' + Random.time() // Random.date()指示生成的日期字符串的格式,默认为yyyy-MM-dd；Random.time() 返回一个随机的时间字符串
+        }
+    };
 }
+
+// mock一组数据
+const ecarNews = function() {
+    let articles = [];
+    let big = [];
+    for (let i = 0; i < 4; i++) {
+        let newArticleObject = {
+            title: Random.ctitle(5, 20), //  Random.csentence( min, max )
+            img: Random.dataImage('100x68', Random.color()), // Random.dataImage( size, text ) 生成一段随机的 Base64 图片编码
+            author_name: Random.cname(), // Random.cname() 随机生成一个常见的中文姓名
+            date: Random.date() + ' ' + Random.time() // Random.date()指示生成的日期字符串的格式,默认为yyyy-MM-dd；Random.time() 返回一个随机的时间字符串
+        }
+        articles.push(newArticleObject)
+    }
+
+    for (let i = 0; i < 2; i++) {
+        let newArticleObject = {
+            title: Random.ctitle(5, 20), //  Random.csentence( min, max )
+            img: Random.dataImage('100x68', Random.color()), // Random.dataImage( size, text ) 生成一段随机的 Base64 图片编码
+            author_name: Random.cname(), // Random.cname() 随机生成一个常见的中文姓名
+            date: Random.date() + ' ' + Random.time() // Random.date()指示生成的日期字符串的格式,默认为yyyy-MM-dd；Random.time() 返回一个随机的时间字符串
+        }
+        big.push(newArticleObject)
+    }
+ 
+    return {
+        littleList:articles,
+        bigList:big
+    };
+}
+
+
 
 
 var pageCount = Random.integer(1, 10);
@@ -32,7 +72,7 @@ function mockPage(currPage){
                     'id|+1': ids,
                     'title': '@ctitle(5, 15)',
                     'desc': '@cparagraph(2, 5)',
-                    'img': Random.image('200x100', Random.color()), //经测试MockRandom.dataImage()无效,看了下源码，是有该函数的 - 下的mockjs@1.0.1-beta3包
+                    'img': Random.dataImage('200x100', Random.color()), //经测试MockRandom.dataImage()无效,看了下源码，是有该函数的 - 下的mockjs@1.0.1-beta3包
                     'time': Random.now('yyyy-MM-dd')
                 }
             ]
@@ -57,6 +97,7 @@ function mockPage(currPage){
 
 
 Mock.mock('/news/index', 'post', produceNewsData);
+Mock.mock('/news/ecars', 'post', ecarNews);
 Mock.mock('/news/list','post',function(options){
     let params = JSON.parse(options.body);
     let data =  mockPage(params.page);

@@ -8,7 +8,11 @@ Vue.use(Router)
 export default new Router({
   routes: [{
      path:'/',
-     name:'ListView',
-     component:ListView
+     name:'Home',
+     component:Home
+  },{
+    path:'/list',
+    name:'ListView',
+    component:ListView
   }]
 })

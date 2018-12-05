@@ -1,13 +1,8 @@
 <template>
-  <el-row class="ev-news" :gutter="20">
-    <el-col :span="12" class="big-item">
-      <div>
+  <el-row class="hot-news" :gutter="20">
+      <div class="big-item">
         <img :src="big.img" class="article-img">
-        <div class="big-title">{{big.title}}</div>
-        <div class="big-date">{{big.date}}</div>
       </div>
-    </el-col>
-    <el-col :span="12" class="little-item">
       <el-row v-for="item in items" :key="item.title" class="article-li" :gutter="10">
         <el-col class="article-title-left">
           <img :src="item.img" class="article-img">
@@ -17,13 +12,16 @@
           <div class="date">{{item.date}}</div>
         </el-col>
       </el-row>
-    </el-col>
   </el-row>
 </template>
 
 <style lang="less" scoped>
-.ev-news {
-  padding: 15px 0;
+.hot-news {
+  padding: 15px 10px;
+}
+
+.big-item{
+  margin-bottom: 15px;
 }
 
 .article-li {
@@ -50,7 +48,7 @@
 .title {
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
+  word-break: keep-all;
 }
 
 .date {
@@ -61,9 +59,6 @@
 .big-title{
   font-size:20px;
   margin-top:10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .big-date{
   margin-top:10px;
@@ -73,7 +68,7 @@
 
 <script>
 export default {
-  name: "ev-news",
+  name: "hot-news",
   components: {},
   data() {
     return {
