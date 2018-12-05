@@ -78,13 +78,13 @@ export default {
   data() {
     return {
       logo: Logo,
-      activeIndex: 1
+      activeIndex: '1'
     };
   },
   mounted() {},
   computed: {},
   methods: {
-    handleClick(tab, event) {
+    handleSelect(tab, event) {
       console.log(tab, event);
     }
   }
