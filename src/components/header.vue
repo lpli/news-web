@@ -1,7 +1,8 @@
 <template>
   <div class="header-container">
     <el-row class="header-top">
-      <el-col :span="20"></el-col>
+      <el-col :span="2" style="color:#fff;" :offset="1"><router-link class="link" to="/">EV网</router-link></el-col>
+      <el-col :span="2" :offset="18" ><a class="link login">登录</a></el-col>
     </el-row>
     <el-row class="header-search">
       <el-col :span="2" :offset="4">
@@ -73,6 +74,14 @@
 }
 .el-button {
   border-radius: 0;
+}
+
+.link{
+  color:#fff;
+  text-decoration: unset;
+}
+.link:hover{
+  cursor: pointer;
 }
 </style>
 

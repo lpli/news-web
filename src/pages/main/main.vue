@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <el-container>
       <el-header class="header" :height="height">
          <l-header></l-header>
@@ -11,7 +11,6 @@
         <l-footer></l-footer>
       </el-footer>
     </el-container>
-    
   </div>
 </template>
 <style lang="css" scoped>
@@ -37,10 +36,10 @@
 </style>
 
 <script>
-import Header from './components/header';
-import Footer from './components/footer';
+import Header from '@/components/header';
+import Footer from '@/components/footer';
 export default {
-  name: 'App',
+  name: 'Main',
   components:{'l-header':Header,"l-footer":Footer},
   data(){
     return {
