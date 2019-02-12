@@ -96,10 +96,53 @@ function mockPage(currPage){
 }
 
 
+var tableTemplate = {}; //数据模板
+var total = Random.integer(1, 1000);
+function mockTable(currPage,pageSize){
+    var count = total/pageSize;
+    if(total%pageSize>0){
+        count = count+1;
+    }
+    if (currPage === count) {
+        tableTemplate = {
+            'total': total,
+            'rows|1-10': [ //最后一页的数据在1-10的区间产生
+                {
+                    'id|+1': ids,
+                    'title': '@ctitle(5, 15)',
+                    'desc': '@cparagraph(2, 5)',
+                    'img': Random.dataImage('200x100', Random.color()), //经测试MockRandom.dataImage()无效,看了下源码，是有该函数的 - 下的mockjs@1.0.1-beta3包
+                    'time': Random.now('yyyy-MM-dd')
+                }
+            ]
+        }
+    } else {
+        tableTemplate = {
+            'total': total,
+            'rows|10': [ //有分页的时候一页10条数据
+                {
+                    'id|+1': ids,
+                    'title': '@ctitle(5, 15)',
+                    'desc': '@cparagraph(2, 5)',
+                    'img': Random.dataImage('200x100', Random.color()), //经测试MockRandom.dataImage()无效,看了下源码，是有该函数的 - 下的mockjs@1.0.1-beta3包
+                    'time': Random.now('yyyy-MM-dd')
+                }
+            ]
+        }
+    }
+    return Mock.mock(tableTemplate);
+}
+
+
 Mock.mock('/news/index', 'post', produceNewsData);
 Mock.mock('/news/ecars', 'post', ecarNews);
 Mock.mock('/news/list','post',function(options){
     let params = JSON.parse(options.body);
     let data =  mockPage(params.page);
+    return data;
+});
+Mock.mock('/list','post',function(options){
+    let params = JSON.parse(options.body);
+    let data =  mockTable(params.pageNo,params.pageSize);
     return data;
 });
