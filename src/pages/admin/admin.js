@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import router from './router'
 import Admin from './admin.vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -10,6 +11,7 @@ Vue.use(http);
 
 new Vue({
   el: '#app',
+  router,
   components: { Admin },
   template: '<Admin/>'
 })
