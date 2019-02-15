@@ -2,7 +2,9 @@
   <div class="header-container">
     <el-row class="header-top">
       <el-col :span="2" style="color:#fff;" :offset="1"><router-link class="link" to="/">EV网</router-link></el-col>
-      <el-col :span="2" :offset="18" ><a class="link login" href="./admin.html">管理后台</a></el-col>
+      <el-col :span="2" :offset="18" >
+        <router-link class="link login" to="/admin">管理后台</router-link>
+      </el-col>
     </el-row>
     <el-row class="header-search">
       <el-col :span="2" :offset="4">

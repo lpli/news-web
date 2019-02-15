@@ -120,7 +120,10 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ].concat(utils.htmlPlugin())
+  ].concat(utils.htmlPlugin()).concat(new webpack.ProvidePlugin({
+    'window.Quill': 'quill/dist/quill.js',
+    'Quill': 'quill/dist/quill.js',
+  }))
 })
 
 if (config.build.productionGzip) {

@@ -8,7 +8,7 @@
     <ul class="user-ul">
       <li class="user-li">设置</li>
       <li class="user-seprator"></li>
-      <li class="user-li">退出</li>
+      <li class="user-li"><router-link to="/login">退出</router-link></li>
     </ul>
     <div class="img-wrapper" slot="reference">
       <img :src="imgSrc">

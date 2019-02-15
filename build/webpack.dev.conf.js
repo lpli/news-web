@@ -25,7 +25,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [
-        { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'main.html') },
+        { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
       ],
     },
     hot: true,
@@ -65,7 +65,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ].concat(utils.htmlPlugin())
+  ].concat(utils.htmlPlugin()).concat(new webpack.ProvidePlugin({
+    'window.Quill': 'quill/dist/quill.js',
+    'Quill': 'quill/dist/quill.js',
+  }))
 })
 
 module.exports = new Promise((resolve, reject) => {

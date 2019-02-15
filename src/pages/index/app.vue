@@ -14,7 +14,7 @@ body {
 
 <script>
 export default {
-  name: "Admin",
+  name: "App",
   data() {
     return {};
   },

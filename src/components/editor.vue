@@ -95,6 +95,7 @@
 <style>
 .preview img {
   max-width: 100%;
+  cursor:pointer !important;
 }
 </style>
 
@@ -129,6 +130,9 @@ import "highlight.js/styles/github.css";
 
 import { quillEditor } from "vue-quill-editor";
 import * as Quill from "quill"; //引入编辑器
+import  {ImageDrop}  from "quill-image-drop-module";
+import  ImageResize  from "quill-image-resize-module";
+
 var fonts = [
   "SimSun",
   "SimHei",
@@ -142,7 +146,8 @@ var fonts = [
 var Font = Quill.import("formats/font");
 Font.whitelist = fonts; //将字体加入到白名单
 Quill.register(Font, true);
-
+Quill.register("modules/imageDrop", ImageDrop);
+Quill.register("modules/imageResize", ImageResize);
 import hljs from "highlight.js";
 export default {
   name: "editor",
@@ -162,6 +167,15 @@ export default {
             delay: 2000,
             maxStack: 500,
             userOnly: true
+          },
+          imageDrop: true,
+          imageResize: {
+            displayStyles: {
+              backgroundColor: "black",
+              border: "none",
+              color: "white"
+            },
+            modules: ["Resize", "DisplaySize", "Toolbar"]
           }
         }
       }
