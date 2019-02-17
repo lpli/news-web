@@ -66,6 +66,10 @@ export default {
       type: String,
       default: ""
     },
+    method: {
+      type: String,
+      default: "get"
+    },
     param: {
       type: Object,
       default: () => {
@@ -100,9 +104,9 @@ export default {
     getData() {
       this.param["pageNo"] = this.pageNo;
       this.param["pageSize"] = this.pageSize;
-      this.$http.post(this.url, this.param).then(data => {
+      this.$http[this.method](this.url, this.param).then(data => {
         this.total = data.total;
-        this.rows = data.rows;
+        this.rows = data.records;
       });
     },
     //分页事件回调函数

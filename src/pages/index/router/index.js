@@ -8,6 +8,7 @@ import Login from '@/components/login'
 import Index from '@/components/index'
 import Home from '@/components/home'
 import ListView from '@/components/list-view'
+import MenuList from '@/components/menu-list'
 Vue.use(Router)
 
 export default new Router({
@@ -34,6 +35,9 @@ export default new Router({
     children: [{
       path: '/userList',
       component: UserList
+    },{
+      path: '/menu',
+      component: MenuList
     }, {
       path: '/editor',
       component: Editor

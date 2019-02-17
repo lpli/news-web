@@ -88,7 +88,7 @@
 </style>
 
 <script>
-import Logo from "../assets/logo_one.png";
+import Logo from "@/assets/logo_one.png";
 export default {
   name: "l-header",
   data() {

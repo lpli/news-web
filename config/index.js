@@ -11,6 +11,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/vlog':{
+        target:'http://localhost:9000',
+      
+        pathRewrite: {
+          '^/vlog': '/',
+         }
+         
+      }
     },
 
     // Various Dev Server settings

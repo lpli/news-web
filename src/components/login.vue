@@ -1,26 +1,37 @@
 <template>
   <el-container>
-    <el-header></el-header>
+    <el-header>
+      <el-col :span="2" class="band" >
+        <img :src="logo" >
+      </el-col>
+    </el-header>
     <el-main>
-      <el-carousel  arrow="never" height="480px" indicator-position="outside">
-        <el-carousel-item v-for="item in images" :key="item">
-            <img :src="item.src"  class="img-item"/>
+      <el-carousel arrow="never" height="600px" indicator-position="outside">
+        <el-carousel-item v-for="item in images" :key="item.src">
+          <img :src="item.src" class="img-item">
         </el-carousel-item>
       </el-carousel>
       <el-card class="box-card login">
-        <el-form class="login-form" ref="login-form" v-model="user" size="medium">
-          <el-form-item required>
+        <el-form
+          class="login-form"
+          ref="login-form"
+          :model="loginForm"
+          size="medium"
+          :rules="rules"
+          status-icon
+        >
+          <el-form-item prop="username">
             <el-input
               type="text"
-              v-model="user.username"
+              v-model="loginForm.username"
               prefix-icon="el-icon-third-user"
               placeholder="用户名"
             ></el-input>
           </el-form-item>
-          <el-form-item required>
+          <el-form-item prop="password">
             <el-input
               type="password"
-              v-model="user.password"
+              v-model="loginForm.password"
               prefix-icon="el-icon-third-lock-fill"
               placeholder="密码"
             ></el-input>
@@ -41,6 +52,13 @@
   height: calc(~"100% - 60px");
   padding: 0px;
 }
+.band{
+  padding:10px;
+  height:60px;
+  img {
+    height:40px;
+  }
+}
 .login {
   width: 300px;
   height: 200px;
@@ -48,7 +66,7 @@
   left: 65%;
   top: 30%;
   padding: 20px 0px;
-  z-index:9999;
+  z-index: 9999;
 }
 .login-btn {
   width: 100%;
@@ -73,28 +91,54 @@
   background-color: #d3dce6;
 }
 
-.img-item{
-    width:100%;
+.img-item {
+  width: 100%;
 }
 </style>
 
 <script>
-import bg from '@/assets/bg.jpg';
-import bg1 from '@/assets/bg1.jpg';
+import Logo from "@/assets/logo_one.png";
+import bg from "@/assets/bg.jpg";
+import bg1 from "@/assets/bg1.jpg";
 export default {
   name: "login",
   data() {
     return {
-      user: {
+      logo: Logo,
+      loginForm: {
         username: "",
         password: ""
       },
-      images:[{src:bg},{src:bg1}]
+      rules: {
+        username: [
+          {
+            required: true,
+            message: "用户名不能为空",
+            trigger: "blur"
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: "密码不能为空",
+            trigger: "blur"
+          }
+        ]
+      },
+      images: [{ src: bg }, { src: bg1 }]
     };
   },
-  methods:{
-    login(){
-      this.$router.push('/admin');
+  methods: {
+    login() {
+      this.$refs["login-form"].validate(valid => {
+        if (valid) {
+          this.$http.post("/vlog/login", this.loginForm).then(data => {
+            this.$router.push("/admin");
+          });
+        } else {
+          return false;
+        }
+      });
     }
   }
 };
