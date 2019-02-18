@@ -4,7 +4,7 @@ import App from './App.vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import http from '../../util/http';
-// require('../../util/mock');
+require('../../util/mock');
 require("../../assets/icon/iconfont.css");
 Vue.use(ElementUI);
 Vue.use(http);
@@ -12,6 +12,8 @@ Vue.use(http);
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

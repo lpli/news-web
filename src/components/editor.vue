@@ -92,7 +92,7 @@
     </el-dialog>
   </div>
 </template>
-<style>
+<style lang="less">
 .preview img {
   max-width: 100%;
   cursor:pointer !important;
@@ -120,12 +120,15 @@
 .quill-code {
   border-top: none;
 }
+
+
+
+
 </style>
 
 <script>
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
 import "highlight.js/styles/github.css";
 
 import { quillEditor } from "vue-quill-editor";
