@@ -132,7 +132,7 @@ export default {
     login() {
       this.$refs["login-form"].validate(valid => {
         if (valid) {
-          this.$http.post("/vlog/login", this.loginForm).then(data => {
+          this.$http.post("/login", this.loginForm).then(data => {
             this.$router.push("/admin");
           });
         } else {

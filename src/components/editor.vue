@@ -95,7 +95,7 @@
 <style lang="less">
 .preview img {
   max-width: 100%;
-  cursor:pointer !important;
+  cursor: pointer !important;
 }
 </style>
 
@@ -120,10 +120,6 @@
 .quill-code {
   border-top: none;
 }
-
-
-
-
 </style>
 
 <script>
@@ -133,8 +129,9 @@ import "highlight.js/styles/github.css";
 
 import { quillEditor } from "vue-quill-editor";
 import * as Quill from "quill"; //引入编辑器
-import  {ImageDrop}  from "quill-image-drop-module";
-import  ImageResize  from "quill-image-resize-module";
+import Delta from "quill-delta";
+import { ImageDrop } from "quill-image-drop-module";
+import ImageResize from "quill-image-resize-module";
 
 var fonts = [
   "SimSun",
@@ -179,6 +176,25 @@ export default {
               color: "white"
             },
             modules: ["Resize", "DisplaySize", "Toolbar"]
+          },
+          clipboard: {
+            matchers: [
+              [
+                "p",
+                (node, delta) => {
+                  //保留段落前的空格
+                  let de = new Delta();
+                  delta.forEach(op => {
+                    if (typeof op["insert"] == 'string') {
+                      de.insert(node.innerText, op["attributes"]);
+                    } else{
+                      de.insert(op);
+                    }
+                  });
+                  return delta.compose(de.delete(delta.length()-1));
+                }
+              ]
+            ]
           }
         }
       }

@@ -41,7 +41,7 @@ export default {
         userName: "",
         nickName: ""
       },
-      url: "/vlog/user/pageList",
+      url: "/user/pageList",
       columns: [
         {
           label: "ID",

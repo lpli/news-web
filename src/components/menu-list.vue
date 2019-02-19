@@ -74,7 +74,7 @@ export default {
       this.showDialog = true;
     },
     add() {
-      this.$http.post("/vlog/menu/", this.menuForm).then(json => {
+      this.$http.post("/menu/create", this.menuForm).then(json => {
         if (json.code) {
           this.$message({
             message: "创建成功",
@@ -87,7 +87,7 @@ export default {
     },
     getData() {
       this.$http
-        .get("/vlog/menu/list")
+        .get("/menu/list")
         .then(json => (this.menuList = json.data));
     },
     handleDragStart(node, ev) {

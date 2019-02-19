@@ -104,9 +104,15 @@ export default {
     getData() {
       this.param["pageNo"] = this.pageNo;
       this.param["pageSize"] = this.pageSize;
-      this.$http[this.method](this.url, this.param).then(data => {
-        this.total = data.total;
-        this.rows = data.records;
+      this.$http[this.method](this.url, this.param).then(json => {
+        if (json.code == "1") {
+          this.total = json.data.total;
+          this.rows = json.data.records;
+        }else{
+          this.$message.warnning({
+            message:'数据加载异常'
+          })
+        }
       });
     },
     //分页事件回调函数

@@ -3,8 +3,10 @@ import {
   Message
 } from 'element-ui';
 import router from '@/pages/index/router';
+
 const MyPlugin = {};
 MyPlugin.install = function (Vue, options) {
+  axios.defaults.baseURL = '/vlog'
   //请求头
   axios.interceptors.request.use(function (config) {
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
