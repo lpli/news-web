@@ -36,11 +36,10 @@
         <!-- Add font size dropdown -->
         <span class="ql-formats">
           <select class="ql-size">
-            <option value="small"></option>
-            <!-- Note a missing, thus falsy value, is used to reset to default -->
             <option selected></option>
-            <option value="large"></option>
-            <option value="huge"></option>
+            <option value="16px" ></option>
+            <option value="18px"></option>
+            <option value="20px"></option>
           </select>
           <select class="ql-font">
             <option value="SimSun" selected></option>
@@ -63,6 +62,7 @@
         <span class="ql-formats">
           <button class="ql-image"></button>
           <button class="ql-video"></button>
+          <button class="ql-link"></button>
         </span>
         <!-- You can also add your own -->
         <span class="ql-formats">
@@ -88,7 +88,7 @@
       <code class="hljs xml" v-html="contentCode"></code>
     </div>
     <el-dialog title="预览" :visible.sync="dialogVisible" width="70%">
-      <div class="preview ql-editor" v-html="content"></div>
+      <div class="ql-editor preview" v-html="content"></div>
     </el-dialog>
   </div>
 </template>
@@ -97,9 +97,18 @@
   max-width: 100%;
   cursor: pointer !important;
 }
+.ql-editor{
+  font-size:16px;
+  font-family: "Microsoft Yahei", Avenir, "Segoe UI", "Hiragino Sans GB", STHeiti, "Microsoft Sans Serif", "WenQuanYi Micro Hei", sans-serif;
+}
+.ql-editor p{
+  margin-bottom: 0.5em;
+}
 </style>
 
 <style lang="less" scoped>
+
+
 .editor {
   display: block;
 }
@@ -126,28 +135,19 @@
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "highlight.js/styles/github.css";
+import '@/assets/style/font.less'; 
 
 import { quillEditor } from "vue-quill-editor";
 import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
 import { ImageDrop } from "quill-image-drop-module";
 import ImageResize from "quill-image-resize-module";
+import {container, ImageExtend,QuillWatch} from 'quill-image-extend-module'
+import { MessageBox } from 'element-ui';
 
-var fonts = [
-  "SimSun",
-  "SimHei",
-  "Microsoft-YaHei",
-  "KaiTi",
-  "FangSong",
-  "Arial",
-  "Times-New-Roman",
-  "sans-serif"
-];
-var Font = Quill.import("formats/font");
-Font.whitelist = fonts; //将字体加入到白名单
-Quill.register(Font, true);
 Quill.register("modules/imageDrop", ImageDrop);
 Quill.register("modules/imageResize", ImageResize);
+Quill.register('modules/ImageExtend', ImageExtend)
 import hljs from "highlight.js";
 export default {
   name: "editor",
@@ -159,10 +159,31 @@ export default {
       dialogVisible: false,
       showCode: false,
       id: "editor",
-      content: "<p>example contentxxxxxxxxxxxxxx</p>",
+      content: "",
       editorOption: {
+        placeholder:'请输入',
         modules: {
-          toolbar: "#toolbar",
+          toolbar: {
+            container:"#toolbar",
+            handlers:{
+              'image': function () {
+                QuillWatch.emit(this.quill.id)
+              }
+              // 'video':function(){
+              //     MessageBox.prompt('请输入URL', '提示', {
+              //       confirmButtonText: '确定',
+              //       cancelButtonText: '取消',
+              //       inputPattern: /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/,
+              //       inputErrorMessage: 'URL格式不正确'
+              //     }).then(({value}) => {
+              //         this.quill.format('video',value);
+              //     }).catch(() => {
+              //         this.quill.format('video',false);    
+              //     });
+              //   }
+              // }
+            }
+          },
           history: {
             delay: 2000,
             maxStack: 500,
@@ -177,28 +198,43 @@ export default {
             },
             modules: ["Resize", "DisplaySize", "Toolbar"]
           },
+          ImageExtend: {
+              loading: true,
+              name: 'img',
+              action: '/xxx',
+              response: (res) => {
+                return res.info
+              }
+          },
           clipboard: {
             matchers: [
               [
                 "p",
                 (node, delta) => {
                   //保留段落前的空格
-                  let de = new Delta();
-                  delta.forEach(op => {
-                    if (typeof op["insert"] == 'string') {
-                      de.insert(node.innerText, op["attributes"]);
-                    } else{
-                      de.insert(op);
+                  let newDelta = new Delta();
+                  delta.forEach((op) => {
+                    let line = false;
+                    if (typeof op["insert"] == 'string' && op["insert"]!='\n') {
+                      if(op['insert'].endWith('\n')){
+                        line = true;
+                      }
+                      op['insert'] = node.innerText;
+                    }
+                    if(line){
+                        newDelta.insert(op['insert'],op['attributes']).insert('\n');
+                    }else{
+                        newDelta.insert(op['insert'],op['attributes'])
                     }
                   });
-                  return delta.compose(de.delete(delta.length()-1));
+                  return newDelta;
                 }
               ]
             ]
           }
         }
       }
-    };
+    }
   },
   methods: {
     onEditorBlur(quill) {
@@ -236,7 +272,27 @@ export default {
     }
   },
   mounted() {
-    console.log("this is current quill instance object", this.editor);
+    var fonts = [
+      "SimSun",
+      "SimHei",
+      "Microsoft-YaHei",
+      "KaiTi",
+      "FangSong",
+      "Arial",
+      "Times-New-Roman",
+      "sans-serif"
+    ];
+    var sizes = [
+      "16px",
+      "18px",
+      "20px"
+    ];
+    var Font = Quill.import("formats/font");
+    var Size = Quill.import("formats/size");
+    Font.whitelist = fonts; //将字体加入到白名单
+    Size.whitelist = sizes; //将字体加入到白名单
+    Quill.register(Font, true);
+    Quill.register(Size, true);
   }
   // Omit the same parts as in the following component sample code
   // ...

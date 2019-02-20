@@ -2,7 +2,6 @@
   <router-view/>
 </template>
 <style lang="less">
-@import '../../assets/style/font'; 
 
 html,
 body {

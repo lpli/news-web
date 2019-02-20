@@ -9,6 +9,11 @@ require("../../assets/icon/iconfont.css");
 Vue.use(ElementUI);
 Vue.use(http);
 
+String.prototype.endWith=function(str){     
+  var reg=new RegExp(str+"$");     
+  return reg.test(this);        
+}
+
 new Vue({
   el: '#app',
   router,
