@@ -8,7 +8,7 @@
     <ul class="user-ul">
       <li class="user-li">设置</li>
       <li class="user-seprator"></li>
-      <li class="user-li"><router-link to="/login">退出</router-link></li>
+      <li class="user-li" @click="logout">退出</li>
     </ul>
     <div class="img-wrapper" slot="reference">
       <img :src="imgSrc">
@@ -75,6 +75,13 @@ export default {
     imgSrc: {
       type: String,
       default: img
+    }
+  },
+  methods:{
+    logout(){
+      this.$http.post('/logout').then(()=>{
+
+      });
     }
   }
 };

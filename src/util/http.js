@@ -10,6 +10,10 @@ MyPlugin.install = function (Vue, options) {
   //请求头
   axios.interceptors.request.use(function (config) {
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    let token = localStorage.getItem('token');
+    if(token){
+      config.headers['EV-Token'] = token;
+    }
     return config;
   }, function (error) {
     return Promise.reject(error);

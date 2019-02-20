@@ -1,6 +1,8 @@
  <template>
   <div>
-    <el-button @click="show" type="primary">新增</el-button>
+    <div class="btn-bar">
+      <el-button @click="show" type="primary" size="mini">新增</el-button>
+    </div>
     <el-tree
       :data="menuList"
       node-key="id"
@@ -15,14 +17,31 @@
       draggable
       :allow-drop="allowDrop"
       :allow-drag="allowDrag"
-    ></el-tree>
-    <el-dialog :visible.sync="showDialog" title="新增">
-      <el-form :model="menuForm" label-width="100px">
-        <el-form-item prop="id">
-          <el-input v-model="menuForm.id" type="hidden"></el-input>
+      ref="menuTree"
+    >
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span class="tree-node-label">{{ node.label }}</span>
+        <span class="tree-node-ops">
+          <el-button type="text" @click="append(node,data)">
+            <i class="el-icon-circle-plus"></i>
+          </el-button>
+          <el-button type="text" @click="edit(node,data)">
+            <i class="el-icon-edit"></i>
+          </el-button>
+          <el-button type="text" @click="remove(node,data)">
+            <i class="el-icon-delete"></i>
+          </el-button>
+          
+        </span>
+      </span>
+    </el-tree>
+    <el-dialog :visible.sync="showDialog" :title="dialogTitle">
+      <el-form :model="menuForm" label-width="100px" :rules="rules" status-icon ref="menuForm">
+        <el-form-item prop="id" v-show="false">
+          <el-input v-model="menuForm.id"></el-input>
         </el-form-item>
         <el-form-item prop="seq" label="编号">
-          <el-input v-model="menuForm.seq"></el-input>
+          <el-input v-model.number="menuForm.seq" ></el-input>
         </el-form-item>
         <el-form-item prop="name" label="名称">
           <el-input v-model="menuForm.name"></el-input>
@@ -30,8 +49,8 @@
         <el-form-item prop="url" label="URL">
           <el-input v-model="menuForm.url"></el-input>
         </el-form-item>
-        <el-form-item prop="pid" label="父id">
-          <el-input v-model="menuForm.pid"></el-input>
+        <el-form-item prop="pid" label="父id" v-show="false">
+          <el-input v-model.number="menuForm.pid"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -41,6 +60,39 @@
     </el-dialog>
   </div>
 </template>
+<style lang="less" >
+.el-tree-node__content {
+  height: 40px;
+  line-height: 40px;
+  .custom-tree-node {
+    width: 100%;
+    padding-left: 10px;
+    .tree-node-ops {
+      padding-left: 100px;
+      > button {
+        display: none;
+      }
+    }
+  }
+}
+
+.el-tree-node__content:hover {
+  .custom-tree-node {
+    .tree-node-ops {
+      > button {
+        display: inline-block;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.btn-bar {
+  margin-bottom: 10px;
+}
+</style>
+
 
 <script>
 import TableList from "@/components/table-list";
@@ -58,9 +110,35 @@ export default {
         seq: "",
         name: "",
         url: "",
-        pid: ""
+        pid: 0
       },
-      showDialog: false
+      showDialog: false,
+      dialogTitle:'',
+      rules: {
+        seq: [
+          { required: true, message: "请输入数字编号", trigger: "blur" },
+          {
+            type: "integer",
+            range:{
+                max: 9999999,
+                min: 0
+            },
+            message: "数字编号最大8位",
+            trigger: ["blur", "change"]
+          }
+        ],
+         pid: [
+          { type: "integer", message: "输入数字父id", trigger: "blur" },
+        ],
+        name:[{
+          required: true, message: "请输入名称", trigger: "blur"
+        },{
+          type:'string',range:{max:60,min:1},message:"长度1~60",trigger: ["blur","change"]
+        }],
+        url:[{
+          type:'regexp',pattern:/\/[\w\-_]+(\.[\w\-_]+)/,message:'url格式不正确',trigger: ["blur","change"]
+        }]
+      }
     };
   },
   mounted() {
@@ -72,23 +150,62 @@ export default {
     },
     show() {
       this.showDialog = true;
+      this.dialogTitle = "新增";
+      this.menuForm.pid = 0;
+    },
+    append(node,data){
+      this.showDialog = true;
+      this.menuForm.pid = data.id;
+      this.menuForm.seq = data.seq;
+    },
+    edit(node,data){
+      this.showDialog = true;
+      this.dialogTitle = "编辑";
+      this.menuForm = data;
     },
     add() {
-      this.$http.post("/menu/create", this.menuForm).then(json => {
-        if (json.code) {
-          this.$message({
-            message: "创建成功",
-            type: "success"
-          });
-          this.getData();
-          this.showDialog = false;
+      this.$refs["menuForm"].validate(valid => {
+        if (!valid) {
+          return;
         }
+        this.$http.post("/menu/create", this.menuForm).then(json => {
+          if (json.code) {
+            this.$message({
+              message: "创建成功",
+              type: "success"
+            });
+            this.getData();
+            this.showDialog = false;
+          }
+        });
       });
     },
     getData() {
-      this.$http
-        .get("/menu/list")
-        .then(json => (this.menuList = json.data));
+      this.$http.get("/menu/list").then(json => (this.menuList = json.data));
+    },
+    remove(node, data) {
+      if (!node.isLeaf) {
+        this.$message.warning({
+          message: "有子菜单，不能直接删除"
+        });
+        return;
+      }
+
+      this.$confirm("确认删除吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http.delete("/menu/" + data.id + "/delete").then(json => {
+          if (json.code == "1") {
+            this.$refs["menuTree"].remove(node);
+          } else {
+            this.$message.error({
+              message: json.msg
+            });
+          }
+        });
+      });
     },
     handleDragStart(node, ev) {
       console.log("drag start", node);

@@ -132,7 +132,8 @@ export default {
     login() {
       this.$refs["login-form"].validate(valid => {
         if (valid) {
-          this.$http.post("/login", this.loginForm).then(data => {
+          this.$http.post("/login", this.loginForm).then(json => {
+            localStorage.setItem('token',json.data);
             this.$router.push("/admin");
           });
         } else {

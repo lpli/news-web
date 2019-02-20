@@ -1,6 +1,6 @@
 <template>
   <div class="table-list">
-    <el-table :data="rows" border stripe>
+    <el-table :data="rows" border stripe v-loading="loading" >
       <el-table-column type="selection" width="55" v-if="select"></el-table-column>
       <el-table-column type="index" v-if="showIndex"></el-table-column>
       <slot name="prepend"/>
@@ -58,10 +58,12 @@ export default {
       pageNo: 1,
       total: 0,
       pageSize: 10,
-      rows: []
+      rows: [],
+      loading:false
     };
   },
   props: {
+    
     url: {
       type: String,
       default: ""
@@ -104,15 +106,20 @@ export default {
     getData() {
       this.param["pageNo"] = this.pageNo;
       this.param["pageSize"] = this.pageSize;
+      this.loading = true;
       this.$http[this.method](this.url, this.param).then(json => {
+        this.loading = false;
         if (json.code == "1") {
           this.total = json.data.total;
           this.rows = json.data.records;
         }else{
-          this.$message.warnning({
+          this.$message.warning({
             message:'数据加载异常'
           })
         }
+        
+      }).catch(()=>{
+        this.loading = false;
       });
     },
     //分页事件回调函数
