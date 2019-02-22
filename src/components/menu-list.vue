@@ -31,7 +31,6 @@
           <el-button type="text" @click="remove(node,data)">
             <i class="el-icon-delete"></i>
           </el-button>
-          
         </span>
       </span>
     </el-tree>
@@ -41,7 +40,7 @@
           <el-input v-model="menuForm.id"></el-input>
         </el-form-item>
         <el-form-item prop="seq" label="编号">
-          <el-input v-model.number="menuForm.seq" ></el-input>
+          <el-input v-model.number="menuForm.seq"></el-input>
         </el-form-item>
         <el-form-item prop="name" label="名称">
           <el-input v-model="menuForm.name"></el-input>
@@ -113,31 +112,42 @@ export default {
         pid: 0
       },
       showDialog: false,
-      dialogTitle:'',
+      dialogTitle: "",
       rules: {
         seq: [
           { required: true, message: "请输入数字编号", trigger: "blur" },
           {
             type: "integer",
-            range:{
-                max: 9999999,
-                min: 0
+            range: {
+              max: 9999999,
+              min: 0
             },
             message: "数字编号最大8位",
             trigger: ["blur", "change"]
           }
         ],
-         pid: [
-          { type: "integer", message: "输入数字父id", trigger: "blur" },
+        pid: [{ type: "integer", message: "输入数字父id", trigger: "blur" }],
+        name: [
+          {
+            required: true,
+            message: "请输入名称",
+            trigger: "blur"
+          },
+          {
+            type: "string",
+            range: { max: 60, min: 1 },
+            message: "长度1~60",
+            trigger: ["blur", "change"]
+          }
         ],
-        name:[{
-          required: true, message: "请输入名称", trigger: "blur"
-        },{
-          type:'string',range:{max:60,min:1},message:"长度1~60",trigger: ["blur","change"]
-        }],
-        url:[{
-          type:'regexp',pattern:/\/[\w\-_]+(\.[\w\-_]+)/,message:'url格式不正确',trigger: ["blur","change"]
-        }]
+        url: [
+          {
+            type: "regexp",
+            pattern: /\/[\w\-_]+(\.[\w\-_]+)/,
+            message: "url格式不正确",
+            trigger: ["blur", "change"]
+          }
+        ]
       }
     };
   },
@@ -151,17 +161,30 @@ export default {
     show() {
       this.showDialog = true;
       this.dialogTitle = "新增";
-      this.menuForm.pid = 0;
+      this.menuForm = {
+        id: "",
+        seq: "",
+        name: "",
+        url: "",
+        pid: 0
+      };
     },
-    append(node,data){
+    append(node, data) {
       this.showDialog = true;
-      this.menuForm.pid = data.id;
-      this.menuForm.seq = data.seq;
+      this.menuForm = {
+        id: "",
+        seq: data.seq,
+        name: "",
+        url: "",
+        pid: data.id
+      };
+   
     },
-    edit(node,data){
+    edit(node, data) {
       this.showDialog = true;
       this.dialogTitle = "编辑";
-      this.menuForm = data;
+      let d = Object.assign({}, data);
+      this.menuForm = d;
     },
     add() {
       this.$refs["menuForm"].validate(valid => {
@@ -181,7 +204,7 @@ export default {
       });
     },
     getData() {
-      this.$http.get("/menu/list").then(json => (this.menuList = json.data));
+      this.$http.get("/menu/all").then(json => (this.menuList = json.data));
     },
     remove(node, data) {
       if (!node.isLeaf) {

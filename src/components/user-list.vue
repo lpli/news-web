@@ -58,8 +58,7 @@ export default {
         },
         {
           label: "电话",
-          prop: "phone",
-          slotName: "phone"
+          prop: "phone"
         }
       ],
       showIndex: false

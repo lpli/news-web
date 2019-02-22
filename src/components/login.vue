@@ -1,8 +1,8 @@
 <template>
   <el-container>
     <el-header>
-      <el-col :span="2" class="band" >
-        <img :src="logo" >
+      <el-col :span="2" class="band">
+        <img :src="logo">
       </el-col>
     </el-header>
     <el-main>
@@ -52,11 +52,11 @@
   height: calc(~"100% - 60px");
   padding: 0px;
 }
-.band{
-  padding:10px;
-  height:60px;
+.band {
+  padding: 10px;
+  height: 60px;
   img {
-    height:40px;
+    height: 40px;
   }
 }
 .login {
@@ -128,12 +128,20 @@ export default {
       images: [{ src: bg }, { src: bg1 }]
     };
   },
+  mounted() {
+    let component = this;
+    document.onkeydown = function(e) {
+      if (e.keyCode == 13) {
+        component.login();
+      }
+    };
+  },
   methods: {
     login() {
       this.$refs["login-form"].validate(valid => {
         if (valid) {
           this.$http.post("/login", this.loginForm).then(json => {
-            localStorage.setItem('token',json.data);
+            localStorage.setItem("token", json.data);
             this.$router.push("/admin");
           });
         } else {

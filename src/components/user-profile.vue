@@ -80,7 +80,7 @@ export default {
   methods:{
     logout(){
       this.$http.post('/logout').then(()=>{
-
+          this.$router.push('/login');
       });
     }
   }
