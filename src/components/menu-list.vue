@@ -34,8 +34,8 @@
         </span>
       </span>
     </el-tree>
-    <el-dialog :visible.sync="showDialog" :title="dialogTitle">
-      <el-form :model="menuForm" label-width="100px" :rules="rules" status-icon ref="menuForm">
+    <el-dialog :visible.sync="showDialog" :title="dialogTitle" :modal="false">
+      <el-form :model="menuForm" label-width="100px" :rules="rules" status-icon ref="menuForm" >
         <el-form-item prop="id" v-show="false">
           <el-input v-model="menuForm.id"></el-input>
         </el-form-item>
@@ -158,8 +158,15 @@ export default {
     close() {
       this.showDialog = false;
     },
+    showTips() {
+      this.$message({
+        message: "亲！编号会决定菜单顺序哦~",
+        type:'warning'
+      });
+    },
     show() {
       this.showDialog = true;
+      this.showTips();
       this.dialogTitle = "新增";
       this.menuForm = {
         id: "",
@@ -171,6 +178,7 @@ export default {
     },
     append(node, data) {
       this.showDialog = true;
+      this.showTips();
       this.menuForm = {
         id: "",
         seq: data.seq,
@@ -178,10 +186,10 @@ export default {
         url: "",
         pid: data.id
       };
-   
     },
     edit(node, data) {
       this.showDialog = true;
+      this.showTips();
       this.dialogTitle = "编辑";
       let d = Object.assign({}, data);
       this.menuForm = d;
