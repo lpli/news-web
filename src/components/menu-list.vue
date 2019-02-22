@@ -22,13 +22,13 @@
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span class="tree-node-label">{{ node.label }}</span>
         <span class="tree-node-ops">
-          <el-button type="text" @click="append(node,data)">
+          <el-button type="text" @click.stop="append(node,data)">
             <i class="el-icon-circle-plus"></i>
           </el-button>
-          <el-button type="text" @click="edit(node,data)">
+          <el-button type="text" @click.stop="edit(node,data)">
             <i class="el-icon-edit"></i>
           </el-button>
-          <el-button type="text" @click="remove(node,data)">
+          <el-button type="text" @click.stop="remove(node,data)">
             <i class="el-icon-delete"></i>
           </el-button>
         </span>
