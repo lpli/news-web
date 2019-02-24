@@ -3,7 +3,6 @@ import {
   Message
 } from 'element-ui';
 import router from '@/pages/index/router';
-
 const MyPlugin = {};
 MyPlugin.install = function (Vue, options) {
   axios.defaults.baseURL = '/vlog'
@@ -11,7 +10,7 @@ MyPlugin.install = function (Vue, options) {
   axios.interceptors.request.use(function (config) {
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
     let token = localStorage.getItem('token');
-    if(token){
+    if (token) {
       config.headers['EV-Token'] = token;
     }
     return config;
@@ -89,6 +88,18 @@ MyPlugin.install = function (Vue, options) {
             //reject(error);
           })
       })
+    }
+  }
+
+  Vue.prototype.$storage = {
+    put: function (key, value) {
+      localStorage.setItem(key, value);
+    },
+    getObj: function (key) {
+      return JSON.parse(localStorage.getItem(key))
+    },
+    get: function (key) {
+      return localStorage.getItem(key);
     }
   }
 

@@ -50,6 +50,7 @@
   line-height: 30px;
   padding: 0 17px;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .user-li:hover,

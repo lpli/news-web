@@ -1,20 +1,22 @@
 <template>
   <div class="table-list">
-    <el-table :data="rows" border stripe v-loading="loading" >
+    <slot name="opsbar"></slot>
+    <el-table :data="rows" stripe v-loading="loading">
       <el-table-column type="selection" width="55" v-if="select"></el-table-column>
       <el-table-column type="index" v-if="showIndex"></el-table-column>
       <slot name="prepend"/>
       <el-table-column
-        v-for="(column, columnIndex) in columns"
+        v-for="(column, columnIndex) in visibleColumns"
         :key="columnIndex"
         :prop="column.prop"
         :label="column.label"
         :fixed="column.fixed"
         :formatter="column.formatter"
+        :width="column.width"
       >
         <template slot-scope="scope">
           <span v-if="column.slotName">
-            <slot :name="column.slotName" :row="scope.row" :$index="scope.$index"/>
+            <slot :name="column.slotName" :row="scope.row" :$index="scope.$index">插槽{{scope.$index}}</slot>
           </span>
           <span v-else-if="column.render && column.html" v-html="column.render(scope.row)"></span>
           <span v-else-if="column.render">{{column.render(scope.row)}}</span>
@@ -59,11 +61,10 @@ export default {
       total: 0,
       pageSize: 10,
       rows: [],
-      loading:false
+      loading: false
     };
   },
   props: {
-    
     url: {
       type: String,
       default: ""
@@ -102,25 +103,33 @@ export default {
   mounted() {
     this.getData();
   },
+  computed: {
+    visibleColumns: function() {
+      return this.columns.filter(val => {
+        return typeof(val.hidden)!='undefined' ? !val.hidden : true;
+      });
+    }
+  },
   methods: {
     getData() {
       this.param["pageNo"] = this.pageNo;
       this.param["pageSize"] = this.pageSize;
       this.loading = true;
-      this.$http[this.method](this.url, this.param).then(json => {
-        this.loading = false;
-        if (json.code == "1") {
-          this.total = json.data.total;
-          this.rows = json.data.records;
-        }else{
-          this.$message.warning({
-            message:'数据加载异常'
-          })
-        }
-        
-      }).catch(()=>{
-        this.loading = false;
-      });
+      this.$http[this.method](this.url, this.param)
+        .then(json => {
+          this.loading = false;
+          if (json.code == "1") {
+            this.total = json.data.total;
+            this.rows = json.data.records;
+          } else {
+            this.$message.warning({
+              message: "数据加载异常"
+            });
+          }
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
     //分页事件回调函数
     sizeChange(size) {

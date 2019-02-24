@@ -4,7 +4,7 @@
       <el-button @click="show" type="primary" size="mini">新增</el-button>
     </div>
     <el-tree
-      :data="menuList"
+      :data="groupList"
       node-key="id"
       default-expand-all
       @node-drag-start="handleDragStart"
@@ -17,7 +17,7 @@
       draggable
       :allow-drop="allowDrop"
       :allow-drag="allowDrag"
-      ref="menuTree"
+      ref="groupTree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span class="tree-node-label">{{ node.label }}</span>
@@ -35,21 +35,18 @@
       </span>
     </el-tree>
     <el-dialog :visible.sync="showDialog" :title="dialogTitle" :modal="false">
-      <el-form :model="menuForm" label-width="100px" :rules="rules" status-icon ref="menuForm" >
+      <el-form :model="groupForm" label-width="100px" :rules="rules" status-icon ref="groupForm" >
         <el-form-item prop="id" v-show="false">
-          <el-input v-model="menuForm.id"></el-input>
-        </el-form-item>
-        <el-form-item prop="seq" label="编号">
-          <el-input v-model.number="menuForm.seq"></el-input>
+          <el-input v-model.number="groupForm.id"></el-input>
         </el-form-item>
         <el-form-item prop="name" label="名称">
-          <el-input v-model="menuForm.name"></el-input>
+          <el-input v-model="groupForm.name"></el-input>
         </el-form-item>
-        <el-form-item prop="url" label="URL">
-          <el-input v-model="menuForm.url"></el-input>
+        <el-form-item prop="desc" label="说明">
+          <el-input v-model="groupForm.desc" type="textarea"></el-input>
         </el-form-item>
         <el-form-item prop="pid" label="父id" v-show="false">
-          <el-input v-model.number="menuForm.pid"></el-input>
+          <el-input v-model.number="groupForm.pid"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -96,36 +93,23 @@
 <script>
 import TableList from "@/components/table-list";
 export default {
-  name: "MenuList",
+  name: "GroupList",
   components: { TableList },
   data() {
     return {
       treeProp: {
         label: "name"
       },
-      menuList: [],
-      menuForm: {
+      groupList: [],
+      groupForm: {
         id: "",
-        seq: "",
         name: "",
-        url: "",
+        desc: '',
         pid: 0
       },
       showDialog: false,
       dialogTitle: "",
       rules: {
-        seq: [
-          { required: true, message: "请输入数字编号", trigger: "blur" },
-          {
-            type: "integer",
-            range: {
-              max: 9999999,
-              min: 0
-            },
-            message: "数字编号最大8位",
-            trigger: ["blur", "change"]
-          }
-        ],
         pid: [{ type: "integer", message: "输入数字父id", trigger: "blur" }],
         name: [
           {
@@ -140,11 +124,11 @@ export default {
             trigger: ["blur", "change"]
           }
         ],
-        url: [
+        desc: [
           {
             type: "string",
-            pattern: /\/[\w\-_]+(\.[\w\-_]+)/,
-            message: "url格式不正确",
+            range: { max: 500, min: 0 },
+            message: "长度1~500",
             trigger: ["blur", "change"]
           }
         ]
@@ -158,48 +142,37 @@ export default {
     close() {
       this.showDialog = false;
     },
-    showTips() {
-      this.$message({
-        message: "亲！编号会决定菜单顺序哦~",
-        type:'warning'
-      });
-    },
     show() {
       this.showDialog = true;
-      this.showTips();
       this.dialogTitle = "新增";
-      this.menuForm = {
+      this.groupForm = {
         id: "",
-        seq: "",
-        name: "",
-        url: "",
+        name:'',
+        desc:"",
         pid: 0
       };
     },
     append(node, data) {
       this.showDialog = true;
-      this.showTips();
-      this.menuForm = {
+      this.groupForm = {
         id: "",
-        seq: data.seq,
-        name: "",
-        url: "",
+        name:'',
+        desc:"",
         pid: data.id
       };
     },
     edit(node, data) {
       this.showDialog = true;
-      this.showTips();
       this.dialogTitle = "编辑";
       let d = Object.assign({}, data);
-      this.menuForm = d;
+      this.groupForm = d;
     },
     add() {
-      this.$refs["menuForm"].validate(valid => {
+      this.$refs["groupForm"].validate(valid => {
         if (!valid) {
           return;
         }
-        this.$http.post("/menu/create", this.menuForm).then(json => {
+        this.$http.post("/group/create", this.groupForm).then(json => {
           if (json.code) {
             this.$message({
               message: "创建成功",
@@ -212,12 +185,12 @@ export default {
       });
     },
     getData() {
-      this.$http.get("/menu/all").then(json => (this.menuList = json.data));
+      this.$http.get("/group/list").then(json => (this.groupList = json.data));
     },
     remove(node, data) {
       if (!node.isLeaf) {
         this.$message.warning({
-          message: "有子菜单，不能直接删除"
+          message: "有子分组，不能直接删除"
         });
         return;
       }
@@ -227,9 +200,9 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.delete("/menu/" + data.id + "/delete").then(json => {
+        this.$http.delete("/group/" + data.id + "/delete").then(json => {
           if (json.code == "1") {
-            this.$refs["menuTree"].remove(node);
+            this.$refs["groupTree"].remove(node);
           } else {
             this.$message.error({
               message: json.msg

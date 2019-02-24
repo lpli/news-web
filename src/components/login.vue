@@ -141,7 +141,7 @@ export default {
       this.$refs["login-form"].validate(valid => {
         if (valid) {
           this.$http.post("/login", this.loginForm).then(json => {
-            localStorage.setItem("token", json.data);
+            this.$storage.put("token", json.data);
             this.$router.push("/admin");
           });
         } else {

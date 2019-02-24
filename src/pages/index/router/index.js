@@ -9,6 +9,8 @@ import Index from '@/components/index'
 import Home from '@/components/home'
 import ListView from '@/components/list-view'
 import MenuList from '@/components/menu-list'
+import GroupList from '@/components/group-list'
+import RoleList from '@/components/role-list'
 Vue.use(Router)
 
 export default new Router({
@@ -44,6 +46,12 @@ export default new Router({
     }, {
       path: '/404',
       component: NotFound
+    },{
+      path: '/group',
+      component: GroupList
+    },{
+      path: '/role',
+      component: RoleList
     }]
   }, {
     path: '/login',
