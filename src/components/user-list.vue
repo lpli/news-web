@@ -244,7 +244,6 @@ export default {
     },
     submit() {
       this.$refs.userForm.validate(valid => {
-        console.log(this.userForm);
         if (!valid) {
           return;
         }
