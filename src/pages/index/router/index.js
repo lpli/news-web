@@ -11,6 +11,7 @@ import ListView from '@/components/list-view'
 import MenuList from '@/components/menu-list'
 import GroupList from '@/components/group-list'
 import RoleList from '@/components/role-list'
+import OpsList from '@/components/operation-list'
 Vue.use(Router)
 
 export default new Router({
@@ -52,6 +53,9 @@ export default new Router({
     },{
       path: '/role',
       component: RoleList
+    },{
+      path: '/operation',
+      component: OpsList
     }]
   }, {
     path: '/login',

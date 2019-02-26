@@ -12,14 +12,13 @@
             <el-button
               size="mini"
               type="text"
-              @click="edit(scope.row)"
+              @click="update(scope.row)"
               icon="el-icon-third-edit-fill"
               title="编辑"
             ></el-button>
             <el-button
               size="mini"
               type="text"
-              @click="edit(scope.row)"
               icon="el-icon-third-key"
               title="修改密码"
             ></el-button>
@@ -42,8 +41,8 @@
         <el-form-item prop="id" v-show="false">
           <el-input v-model="userForm.id"></el-input>
         </el-form-item>
-        <el-form-item prop="userName" label="用户名">
-          <el-input v-model.trim="userForm.userName"></el-input>
+        <el-form-item prop="userName" label="用户名" >
+          <el-input v-model.trim="userForm.userName" :readonly="edit"></el-input>
         </el-form-item>
         <el-form-item prop="nickName" label="昵称">
           <el-input v-model.trim="userForm.nickName"></el-input>
@@ -79,8 +78,44 @@ export default {
   name: "UserList",
   components: { TableList, TreeSelect },
   data() {
+    let checkNickName = (rule,value,callback)=>{
+        if(!value){
+          callback(new Error("昵称不能为空"));
+        }
+        this.$http.get('/user/check',{id:this.userForm.id,nickName:this.userForm.nickName}).then((json)=>{
+            if(json.code == '1'){
+              callback();
+            }else{
+              callback(new Error(json.msg));
+            }
+        });
+    };
+    let checkPhone = (rule,value,callback)=>{
+        if(!value){
+          callback(new Error("手机号不能为空"));
+        }
+        this.$http.get('/user/check',{id:this.userForm.id,phone:this.userForm.phone}).then((json)=>{
+            if(json.code == '1'){
+              callback();
+            }else{
+              callback(new Error(json.msg));
+            }
+        });
+    };
+    let checkEmail = (rule,value,callback)=>{
+        if(!value){
+          callback(new Error("邮箱不能为空"));
+        }
+        this.$http.get('/user/check',{id:this.userForm.id,email:this.userForm.email}).then((json)=>{
+            if(json.code == '1'){
+              callback();
+            }else{
+              callback(new Error(json.msg));
+            }
+        });
+    };
     return {
-      title: "编辑",
+      edit:false,
       showDialog: false,
       groupList: [],
       userForm: {
@@ -116,6 +151,10 @@ export default {
             max: 80,
             message: "最大长度80",
             trigger: ["blur", "change"]
+          },
+          {
+            validator:checkNickName,
+            trigger: ["blur"]
           }
         ],
         phone: [
@@ -129,6 +168,10 @@ export default {
             pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
             message: "手机号格式不正确",
             trigger: ["blur", "change"]
+          },
+          {
+            validator:checkPhone,
+            trigger: ["blur"]
           }
         ],
         email: [
@@ -141,6 +184,10 @@ export default {
             type: "email",
             message: "邮箱格式不正确",
             trigger: ["blur", "change"]
+          },
+           {
+            validator:checkEmail,
+            trigger: ["blur"]
           }
         ],
         enable: [
@@ -207,10 +254,15 @@ export default {
       showIndex: false
     };
   },
+  computed:{
+    title(){
+      return this.edit?'编辑':'新增';
+    }
+  },
   methods: {
-    edit(row) {
+    update(row) {
       this.showDialog = true;
-      this.title = "编辑";
+      this.edit = true;
       this.userForm = Object.assign(this.userForm, row);
       this.$http.get("/user/"+row.userName+"/group").then((json)=>{
         if(json.code == '1' && json.data){
@@ -237,7 +289,7 @@ export default {
         groupId: ''
       };
       this.showDialog = true;
-      this.title = "新增";
+      this.edit = false;
     },
     close() {
       this.showDialog = false;

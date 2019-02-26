@@ -212,7 +212,7 @@ export default {
       });
     },
     getData() {
-      this.$http.get("/menu/all").then(json => (this.menuList = json.data));
+      this.$http.get("/menu/list").then(json => (this.menuList = json.data));
     },
     remove(node, data) {
       if (!node.isLeaf) {

@@ -96,6 +96,12 @@ export default {
   name: "GroupList",
   components: { TableList },
   data() {
+    let checkName = (rule,value,callback)=>{
+       if(!value){
+          return callback(new Error("名称不能为空"));
+       }
+       this.$http.get("/group/check",{id:this.groupForm.id,name:this.groupForm.name}).then()
+    };
     return {
       treeProp: {
         label: "name"

@@ -15,8 +15,25 @@
           </el-submenu>
           <el-menu-item index="/userList">
             <i class="el-icon-document"></i>
-            <span slot="title">导航三</span>
+            <span slot="title">用户</span>
           </el-menu-item>
+          <el-menu-item index="/role">
+            <i class="el-icon-document"></i>
+            <span slot="title">角色</span>
+          </el-menu-item>
+            <el-menu-item index="/group">
+            <i class="el-icon-document"></i>
+            <span slot="title">组织</span>
+          </el-menu-item>
+          <el-menu-item index="/menu">
+            <i class="el-icon-document"></i>
+            <span slot="title">菜单</span>
+          </el-menu-item>
+           <el-menu-item index="/operation">
+            <i class="el-icon-document"></i>
+            <span slot="title">操作</span>
+          </el-menu-item>
+
           <el-menu-item index="/editor">
             <i class="el-icon-setting"></i>
             <span slot="title">导航四</span>
