@@ -43,6 +43,45 @@ export default {
   name: "OpsList",
   components: { TableList },
   data() {
+    let checkName = (rule,value,callback)=>{
+       if(!value){
+          callback(new Error("名称不能为空"));
+          return;
+       }
+       this.$http.get("/operation/check",{id:this.opsForm.id,name:this.opsForm.name}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
+    };
+    let checkCode = (rule,value,callback)=>{
+       if(!value){
+          callback(new Error("编码不能为空"));
+          return;
+       }
+       this.$http.get("/operation/check",{id:this.opsForm.id,code:this.opsForm.code}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
+    };
+    let checkUrl = (rule,value,callback)=>{
+       if(!value){
+          callback(new Error("URL不能为空"));
+          return;
+       }
+       this.$http.get("/operation/check",{id:this.opsForm.id,url:this.opsForm.url}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
+    };
     return {
       title: "编辑",
       showDialog: false,
@@ -86,6 +125,10 @@ export default {
             min: 2,
             message: "长度为2~100",
             trigger: ["blur", "change"]
+          },
+           {
+            validator: checkName,
+            trigger: ["blur", "change"]
           }
         ],
         code: [
@@ -97,6 +140,10 @@ export default {
           {
             pattern: /^[a-zA-Z0-9]{6,20}$/,
             message: "英文字母加数字的6~20位字符串",
+            trigger: ["blur", "change"]
+          },
+           {
+            validator: checkCode,
             trigger: ["blur", "change"]
           }
         ],
@@ -110,6 +157,10 @@ export default {
             type: "string",
             pattern: /^\/[A-Za-z0-9]+(\/[A-Za-z0-9]+)*$/,
             message: "URL格式不正确",
+            trigger: ["blur", "change"]
+          },
+           {
+            validator: checkUrl,
             trigger: ["blur", "change"]
           }
         ]

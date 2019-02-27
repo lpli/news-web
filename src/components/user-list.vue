@@ -265,8 +265,8 @@ export default {
       this.edit = true;
       this.userForm = Object.assign(this.userForm, row);
       this.$http.get("/user/"+row.userName+"/group").then((json)=>{
-        if(json.code == '1' && json.data){
-          this.userForm.groupId = ''+json.data.id;
+        if(json.code == '1' ){
+          this.userForm.groupId = json.data?''+json.data.id:'';
         }
       })
       this.$http.get('/group/list').then(json => {

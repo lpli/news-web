@@ -45,6 +45,36 @@ export default {
   name: "RoleList",
   components: { TableList },
   data() {
+    let checkName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("名称不能为空"));
+        return;
+      }
+      this.$http
+        .get("/role/check", { id: this.roleForm.id, name: this.roleForm.name })
+        .then(json => {
+          if (json.code == "1") {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
+        });
+    };
+    let checkCode = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("编码不能为空"));
+        return;
+      }
+      this.$http
+        .get("/role/check", { id: this.roleForm.id, code: this.roleForm.code })
+        .then(json => {
+          if (json.code == "1") {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
+        });
+    };
     return {
       title: "编辑",
       showDialog: false,
@@ -78,7 +108,7 @@ export default {
         {
           label: "创建时间",
           prop: "createTime",
-         formatter: (row, opts, val) => {
+          formatter: (row, opts, val) => {
             return moment(val).format("YYYY-MM-DD HH:mm:ss");
           }
         }
@@ -96,6 +126,10 @@ export default {
             min: 2,
             message: "长度为2~100",
             trigger: ["blur", "change"]
+          },
+          {
+            validator: checkName,
+            trigger: ["blur", "change"]
           }
         ],
         code: [
@@ -107,6 +141,10 @@ export default {
           {
             pattern: /^[a-zA-Z0-9]{6,20}$/,
             message: "英文字母加数字的6~20位字符串",
+            trigger: ["blur", "change"]
+          },
+          {
+            validator: checkCode,
             trigger: ["blur", "change"]
           }
         ]

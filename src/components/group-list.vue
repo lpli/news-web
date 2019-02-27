@@ -98,9 +98,16 @@ export default {
   data() {
     let checkName = (rule,value,callback)=>{
        if(!value){
-          return callback(new Error("名称不能为空"));
+          callback(new Error("名称不能为空"));
+          return;
        }
-       this.$http.get("/group/check",{id:this.groupForm.id,name:this.groupForm.name}).then()
+       this.$http.get("/group/check",{id:this.groupForm.id,name:this.groupForm.name}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
     };
     return {
       treeProp: {
@@ -127,6 +134,10 @@ export default {
             type: "string",
             range: { max: 60, min: 1 },
             message: "长度1~60",
+            trigger: ["blur", "change"]
+          },
+          {
+            validator:checkName,
             trigger: ["blur", "change"]
           }
         ],

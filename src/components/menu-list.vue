@@ -99,6 +99,45 @@ export default {
   name: "MenuList",
   components: { TableList },
   data() {
+     let checkName = (rule,value,callback)=>{
+       if(!value){
+          callback(new Error("名称不能为空"));
+          return;
+       }
+       this.$http.get("/menu/check",{id:this.menuForm.id,name:this.menuForm.name}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
+    };
+    let checkSeq = (rule,value,callback)=>{
+       if(!value){
+          callback(new Error("编号不能为空"));
+          return;
+       }
+       this.$http.get("/menu/check",{id:this.menuForm.id,seq:this.menuForm.seq}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
+    };
+    let checkUrl = (rule,value,callback)=>{
+       if(!value){
+          callback(new Error("URL不能为空"));
+          return;
+       }
+       this.$http.get("/menu/check",{id:this.menuForm.id,url:this.menuForm.url}).then((json)=>{
+          if(json.code == '1'){
+            callback();
+          }else{
+            callback(new Error(json.msg));
+          }
+       })
+    };
     return {
       treeProp: {
         label: "name"
@@ -124,6 +163,10 @@ export default {
             },
             message: "数字编号最大8位",
             trigger: ["blur", "change"]
+          },
+           {
+            validator: checkSeq,
+            trigger: ["blur", "change"]
           }
         ],
         pid: [{ type: "integer", message: "输入数字父id", trigger: "blur" }],
@@ -138,6 +181,10 @@ export default {
             range: { max: 60, min: 1 },
             message: "长度1~60",
             trigger: ["blur", "change"]
+          },
+           {
+            validator: checkName,
+            trigger: ["blur", "change"]
           }
         ],
         url: [
@@ -145,6 +192,10 @@ export default {
             type: "string",
             pattern: /\/[\w\-_]+(\.[\w\-_]+)/,
             message: "url格式不正确",
+            trigger: ["blur", "change"]
+          },
+          {
+            validator: checkUrl,
             trigger: ["blur", "change"]
           }
         ]
