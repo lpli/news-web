@@ -1,45 +1,7 @@
 <template>
   <el-container>
     <el-aside :width="asideWidth">
-      <el-scrollbar class="default-scrollbar">
-        <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" router default-active="/userList">
-          <el-submenu index="1">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span slot="title">导航一</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="1-1">选项1</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <el-menu-item index="/userList">
-            <i class="el-icon-document"></i>
-            <span slot="title">用户</span>
-          </el-menu-item>
-          <el-menu-item index="/role">
-            <i class="el-icon-document"></i>
-            <span slot="title">角色</span>
-          </el-menu-item>
-            <el-menu-item index="/group">
-            <i class="el-icon-document"></i>
-            <span slot="title">组织</span>
-          </el-menu-item>
-          <el-menu-item index="/menu">
-            <i class="el-icon-document"></i>
-            <span slot="title">菜单</span>
-          </el-menu-item>
-           <el-menu-item index="/operation">
-            <i class="el-icon-document"></i>
-            <span slot="title">操作</span>
-          </el-menu-item>
-
-          <el-menu-item index="/editor">
-            <i class="el-icon-setting"></i>
-            <span slot="title">导航四</span>
-          </el-menu-item>
-        </el-menu>
-      </el-scrollbar>
+      <sider-menu :menuList="menuList" :collapse="isCollapse"></sider-menu>
     </el-aside>
     <el-container>
       <el-header>
@@ -74,8 +36,8 @@
   box-shadow: -1px 0px 2px 2px #f5f7fa;
   transition: width 0.6s;
   -webkit-transition: width 0.6s;
-  transition-timing-function: ease-in-out;;
-  -webkit-transition-timing-function: ease-in-out;;
+  transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: ease-in-out;
 }
 
 .header-bar {
@@ -113,13 +75,6 @@ html {
   height: 100%;
 }
 
-.default-scrollbar {
-  width: 100%;
-  height: 100%;
-}
-.el-scrollbar__wrap {
-  overflow-x: hidden;
-}
 
 .user-ul {
   list-style: none;
@@ -127,24 +82,32 @@ html {
   padding: 0;
   text-align: center;
 }
-.el-main{
+.el-main {
   min-height: 500px;
 }
 </style>
 
 <script>
 import UserProfile from "@/components/user-profile";
+import SiderMenu from "@/components/sider-menu";
 export default {
   name: "admin-home",
-  components: { UserProfile },
+  components: { UserProfile,SiderMenu },
   data() {
     return {
       isCollapse: false,
       iconName: "el-icon-third-outdent",
-      asideWidth: "200px"
+      asideWidth: "200px",
+      menuList: []
     };
   },
-  mounted() {},
+  mounted() {
+    this.$http.get("/menu/list").then(json => {
+      if (json.code) {
+        this.menuList = json.data;
+      }
+    });
+  },
   methods: {
     collapseClick: function() {
       this.isCollapse = !this.isCollapse;

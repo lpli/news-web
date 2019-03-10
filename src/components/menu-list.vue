@@ -35,7 +35,7 @@
       </span>
     </el-tree>
     <el-dialog :visible.sync="showDialog" :title="dialogTitle" :modal="false">
-      <el-form :model="menuForm" label-width="100px" :rules="rules" status-icon ref="menuForm" >
+      <el-form :model="menuForm" label-width="100px" :rules="rules" status-icon ref="menuForm">
         <el-form-item prop="id" v-show="false">
           <el-input v-model="menuForm.id"></el-input>
         </el-form-item>
@@ -99,44 +99,50 @@ export default {
   name: "MenuList",
   components: { TableList },
   data() {
-     let checkName = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("名称不能为空"));
-          return;
-       }
-       this.$http.get("/menu/check",{id:this.menuForm.id,name:this.menuForm.name}).then((json)=>{
-          if(json.code == '1'){
+    let checkName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("名称不能为空"));
+        return;
+      }
+      this.$http
+        .get("/menu/check", { id: this.menuForm.id, name: this.menuForm.name })
+        .then(json => {
+          if (json.code == "1") {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
-    let checkSeq = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("编号不能为空"));
-          return;
-       }
-       this.$http.get("/menu/check",{id:this.menuForm.id,seq:this.menuForm.seq}).then((json)=>{
-          if(json.code == '1'){
+    let checkSeq = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("编号不能为空"));
+        return;
+      }
+      this.$http
+        .get("/menu/check", { id: this.menuForm.id, seq: this.menuForm.seq })
+        .then(json => {
+          if (json.code == 1) {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
-    let checkUrl = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("URL不能为空"));
-          return;
-       }
-       this.$http.get("/menu/check",{id:this.menuForm.id,url:this.menuForm.url}).then((json)=>{
-          if(json.code == '1'){
+    let checkUrl = (rule, value, callback) => {
+      if (!value) {
+        callback();
+        return;
+      }
+      this.$http
+        .get("/menu/check", { id: this.menuForm.id, url: this.menuForm.url })
+        .then(json => {
+          if (json.code == 1) {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
     return {
       treeProp: {
@@ -164,7 +170,7 @@ export default {
             message: "数字编号最大8位",
             trigger: ["blur", "change"]
           },
-           {
+          {
             validator: checkSeq,
             trigger: ["blur", "change"]
           }
@@ -182,7 +188,7 @@ export default {
             message: "长度1~60",
             trigger: ["blur", "change"]
           },
-           {
+          {
             validator: checkName,
             trigger: ["blur", "change"]
           }
@@ -190,7 +196,7 @@ export default {
         url: [
           {
             type: "string",
-            pattern: /\/[\w\-_]+(\.[\w\-_]+)/,
+            pattern: /^\/[A-Za-z0-9]+(\/[A-Za-z0-9]+)*$/,
             message: "url格式不正确",
             trigger: ["blur", "change"]
           },
@@ -212,7 +218,7 @@ export default {
     showTips() {
       this.$message({
         message: "亲！编号会决定菜单顺序哦~",
-        type:'warning'
+        type: "warning"
       });
     },
     show() {
@@ -250,16 +256,29 @@ export default {
         if (!valid) {
           return;
         }
-        this.$http.post("/menu/create", this.menuForm).then(json => {
-          if (json.code) {
-            this.$message({
-              message: "创建成功",
-              type: "success"
-            });
-            this.getData();
-            this.showDialog = false;
-          }
-        });
+        if (this.menuForm.id) {
+          this.$http.put("/menu/update", this.menuForm).then(json => {
+            if (json.code) {
+              this.$message({
+                message: "修改成功",
+                type: "success"
+              });
+              this.getData();
+              this.showDialog = false;
+            }
+          });
+        } else {
+          this.$http.post("/menu/create", this.menuForm).then(json => {
+            if (json.code) {
+              this.$message({
+                message: "创建成功",
+                type: "success"
+              });
+              this.getData();
+              this.showDialog = false;
+            }
+          });
+        }
       });
     },
     getData() {

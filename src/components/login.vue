@@ -6,7 +6,7 @@
       </el-col>
     </el-header>
     <el-main>
-      <el-carousel arrow="never" height="600px" indicator-position="outside">
+      <el-carousel arrow="never" height="500px" indicator-position="outside">
         <el-carousel-item v-for="item in images" :key="item.src">
           <img :src="item.src" class="img-item">
         </el-carousel-item>
@@ -16,7 +16,6 @@
           class="login-form"
           ref="login-form"
           :model="loginForm"
-          size="medium"
           :rules="rules"
           status-icon
         >

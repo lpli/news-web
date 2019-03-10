@@ -36,7 +36,7 @@ export default new Router({
     path: '/admin',
     component: AdminHome,
     children: [{
-      path: '/userList',
+      path: '/user',
       component: UserList
     },{
       path: '/menu',
