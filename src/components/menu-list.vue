@@ -51,6 +51,9 @@
         <el-form-item prop="pid" label="父id" v-show="false">
           <el-input v-model.number="menuForm.pid"></el-input>
         </el-form-item>
+        <el-form-item prop="icon" label="图标">
+          <el-input v-model="menuForm.icon"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer">
         <el-button @click="add" type="primary">提交</el-button>
@@ -154,7 +157,8 @@ export default {
         seq: "",
         name: "",
         url: "",
-        pid: 0
+        pid: 0,
+        icon: ""
       },
       showDialog: false,
       dialogTitle: "",
@@ -204,6 +208,19 @@ export default {
             validator: checkUrl,
             trigger: ["blur", "change"]
           }
+        ],
+        icon: [
+          {
+            required: true,
+            message: "请输入图标样式名",
+            trigger: "blur"
+          },
+          {
+            type: "string",
+            range: { max: 200, min: 1 },
+            message: "长度1~200",
+            trigger: ["blur", "change"]
+          }
         ]
       }
     };
@@ -230,7 +247,8 @@ export default {
         seq: "",
         name: "",
         url: "",
-        pid: 0
+        pid: 0,
+        icon: ""
       };
     },
     append(node, data) {
@@ -241,7 +259,8 @@ export default {
         seq: data.seq,
         name: "",
         url: "",
-        pid: data.id
+        pid: data.id,
+        icon: ""
       };
     },
     edit(node, data) {
