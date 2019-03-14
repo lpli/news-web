@@ -1,6 +1,6 @@
 <template>
-  <el-container>
-    <el-aside :width="asideWidth">
+  <el-container :class="isCollapse?'collaspe':''">
+    <el-aside>
       <sider-menu :menuList="menuList" :collapse="isCollapse"></sider-menu>
     </el-aside>
     <el-container>
@@ -14,7 +14,8 @@
           ></user-profile>
         </el-row>
       </el-header>
-      <el-scrollbar class="default-scrollbar">
+
+      <el-scrollbar class="main-scrollbar">
         <el-main>
           <router-view/>
         </el-main>
@@ -22,7 +23,7 @@
     </el-container>
   </el-container>
 </template>
-<style lang="css">
+<style lang="less">
 .aside-op {
   line-height: 60px;
   font-size: 40px;
@@ -32,12 +33,28 @@
   cursor: pointer;
 }
 
+.el-container.collaspe {
+  .el-aside {
+    width: 65px !important;
+    .el-menu {
+      .el-submenu__title {
+        span[slot="title"] {
+          display: none;
+        }
+        .el-submenu__icon-arrow {
+          display: none;
+        }
+      }
+    }
+  }
+}
 .el-aside {
   box-shadow: -1px 0px 2px 2px #f5f7fa;
-  transition: width 0.6s;
-  -webkit-transition: width 0.6s;
+  transition: width 0.3s;
+  -webkit-transition: width 0.3s;
   transition-timing-function: ease-in-out;
   -webkit-transition-timing-function: ease-in-out;
+  width: 200px !important;
 }
 
 .header-bar {
@@ -75,15 +92,16 @@ html {
   height: 100%;
 }
 
-
 .user-ul {
   list-style: none;
   margin: 0;
   padding: 0;
   text-align: center;
 }
-.el-main {
-  min-height: 500px;
+.main-scrollbar {
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
 }
 </style>
 
@@ -92,12 +110,11 @@ import UserProfile from "@/components/user-profile";
 import SiderMenu from "@/components/sider-menu";
 export default {
   name: "admin-home",
-  components: { UserProfile,SiderMenu },
+  components: { UserProfile, SiderMenu },
   data() {
     return {
       isCollapse: false,
       iconName: "el-icon-third-outdent",
-      asideWidth: "200px",
       menuList: []
     };
   },
@@ -114,7 +131,6 @@ export default {
       this.iconName = this.isCollapse
         ? "el-icon-third-indent"
         : "el-icon-third-outdent";
-      this.asideWidth = this.isCollapse ? "65px" : "200px";
     }
   }
 };
