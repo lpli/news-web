@@ -229,6 +229,18 @@ export default {
             action: "/vlog/image/upload",
             response: res => {
               return res.data;
+            },
+            start: ()=>{
+
+            },
+            end:()=>{
+
+            },
+            error:()=>{
+              this.$message({
+                type:'error',
+                message:'上传异常'
+              })
             }
           },
           clipboard: {
