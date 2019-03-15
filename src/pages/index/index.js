@@ -8,7 +8,10 @@ import http from '../../util/http';
 require("../../assets/icon/iconfont.css");
 Vue.use(ElementUI);
 Vue.use(http);
-
+router.beforeEach((to,from,next)=>{
+  console.log(to,from);
+  next();
+})
 String.prototype.endWith=function(str){     
   var reg=new RegExp(str+"$");     
   return reg.test(this);        

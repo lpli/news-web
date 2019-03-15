@@ -1,5 +1,5 @@
  <template>
-  <div>
+  <div v-loading="loading">
     <div class="btn-bar">
       <el-button @click="show" type="primary" size="mini">新增</el-button>
     </div>
@@ -148,6 +148,7 @@ export default {
         });
     };
     return {
+      loading: true,
       treeProp: {
         label: "name"
       },
@@ -188,8 +189,8 @@ export default {
           },
           {
             type: "string",
-            range: { max: 60, min: 1 },
-            message: "长度1~60",
+            max: 60,
+            message: "最大长度60",
             trigger: ["blur", "change"]
           },
           {
@@ -217,8 +218,8 @@ export default {
           },
           {
             type: "string",
-            range: { max: 200, min: 1 },
-            message: "长度1~200",
+            max: 200,
+            message: "最大长度200",
             trigger: ["blur", "change"]
           }
         ]
@@ -301,7 +302,12 @@ export default {
       });
     },
     getData() {
-      this.$http.get("/menu/list").then(json => (this.menuList = json.data));
+      this.$http.get("/menu/list").then(json => {
+        this.menuList = json.data;
+        this.loading = false;
+      }).then(()=>{
+        this.loading = false;
+      });
     },
     remove(node, data) {
       if (!node.isLeaf) {
@@ -318,7 +324,7 @@ export default {
       }).then(() => {
         this.$http.delete("/menu/" + data.id + "/delete").then(json => {
           if (json.code == "1") {
-            this.$refs["menuTree"].remove(node);
+            this.getData();
           } else {
             this.$message.error({
               message: json.msg

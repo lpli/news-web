@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-select">
+  <div class="tree-select" v-loading="loading">
     <input :value="value" type="hidden" @input="$emit('input',$event.target.value)" ref="groupId">
     <el-row>
       <el-tag
@@ -49,7 +49,7 @@ export default {
         name: ""
       },
       show: false,
-
+      loading:false,
       treeProps: {
         label: "name"
       }

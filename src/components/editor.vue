@@ -57,16 +57,16 @@
               <button class="ql-video"></button>
               <button class="ql-link"></button>
               <button class="ql-clean"></button>
-              <button id="ql-undo" @click="undoClick" title="回撤">
+              <button id="undo" @click="undoClick" title="回撤" type="button">
                 <i class="el-icon-third-undo1"></i>
               </button>
-              <button id="ql-redo" @click="redoClick" title="重做">
+              <button id="redo" @click="redoClick" title="重做" type="button">
                 <i class="el-icon-third-redo1"></i>
               </button>
-              <button id="ql-html" @click="htmlClick" title="代码">
+              <button id="html" @click="htmlClick" title="代码" type="button">
                 <i class="el-icon-third-html"></i>
               </button>
-              <button id="ql-html" @click="previewClick" title="预览">
+              <button id="preview" @click="previewClick" title="预览" type="button">
                 <i class="el-icon-third-eye"></i>
               </button>
             </span>
@@ -80,7 +80,7 @@
     <div class="btn-bar">
       <el-button type="infor">保存草稿</el-button>
       <el-button type="infor">发布</el-button>
-      <el-button type="infor">预览</el-button>
+      <el-button type="infor" @click="previewClick">预览</el-button>
     </div>
     <el-dialog title="预览" :visible.sync="dialogVisible" width="70%">
       <div class="ql-editor preview" v-html="artical.content"></div>
@@ -224,11 +224,11 @@ export default {
             modules: ["Resize", "Toolbar", "DisplaySize"]
           },
           ImageExtend: {
-            loading: true,
-            name: "img",
-            action: "/xxx",
+            loading: false,
+            name: "file",
+            action: "/vlog/image/upload",
             response: res => {
-              return res.info;
+              return res.data;
             }
           },
           clipboard: {
@@ -275,10 +275,6 @@ export default {
     },
     onEditorReady(quill) {
       console.log("editor ready!", quill);
-    },
-    onEditorChange({ quill, html, text }) {
-      console.log("editor change!", quill, html, text);
-      this.artical.content = html;
     },
     undoClick() {
       this.$refs[this.id].quill.history.undo();

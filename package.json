@@ -17,7 +17,7 @@
     "element-ui": "^2.4.11",
     "highlight.js": "^9.14.2",
     "moment": "^2.24.0",
-    "quill-image-extend-module": "^1.1.2",
+    "quill-image-extend-module": "git@github.com:lpli/quill-image-extend-module.git#master",
     "quill-image-resize-module-fix": "^1.0.0",
     "relative": "^3.0.2",
     "vue": "^2.5.2",
