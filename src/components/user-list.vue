@@ -1,74 +1,89 @@
  <template>
-  <div>
-    <table-list :columns="columns" :showIndex="showIndex" ref="userTable" :url="url">
-      <template slot="opsbar">
-        <el-row>
-          <el-button size="mini" type="success" @click="add">新增</el-button>
-        </el-row>
-      </template>
-      <el-table-column slot="append" label="操作">
-        <template slot-scope="scope">
-          <el-row align="center">
-            <el-button
-              size="mini"
-              type="text"
-              @click="update(scope.row)"
-              icon="el-icon-third-edit-fill"
-              title="编辑"
-            ></el-button>
-            <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-third-key"
-              title="修改密码"
-            ></el-button>
+  <el-row :gutter="20">
+    <el-col :span="6">
+      <el-row class="filter-input">
+        <el-input placeholder="输入部门名" size="small" v-model="filterText"></el-input>
+      </el-row>
+      <el-row>
+        <el-tree ref="departTree"
+          :data="groupList"
+          node-key="id"
+          default-expand-all
+          :props="treeProp"
+          :filter-node-method="filterNode"
+          @node-click="nodeClick"
+        ></el-tree>
+      </el-row>
+    </el-col>
+    <el-col :span="18">
+      <table-list :columns="columns" :showIndex="showIndex" ref="userTable" :url="url" :select="select">
+        <template slot="opsbar">
+          <el-row>
+            <el-button size="mini" type="success" @click="add">新增</el-button>
           </el-row>
         </template>
-      </el-table-column>
-      <template slot="status" slot-scope="scope">
-        <el-tag :type="scope.row.enable?'success':'danger'">{{scope.row.enable?'已启用':'已禁用'}}</el-tag>
-      </template>
-    </table-list>
-    <el-dialog :title="title" :visible.sync="showDialog">
-      <el-form
-        ref="userForm"
-        :model="userForm"
-        size="medium"
-        label-width="100px"
-        :rules="rules"
-        status-icon
-      >
-        <el-form-item prop="id" v-show="false">
-          <el-input v-model="userForm.id"></el-input>
-        </el-form-item>
-        <el-form-item prop="userName" label="用户名" >
-          <el-input v-model.trim="userForm.userName" :readonly="edit"></el-input>
-        </el-form-item>
-        <el-form-item prop="nickName" label="昵称">
-          <el-input v-model.trim="userForm.nickName"></el-input>
-        </el-form-item>
-        <el-form-item prop="phone" label="手机">
-          <el-input v-model.trim="userForm.phone"></el-input>
-        </el-form-item>
-        <el-form-item prop="email" label="邮箱">
-          <el-input v-model.trim="userForm.email" type="email"></el-input>
-        </el-form-item>
-        <el-form-item prop="enable" label="启用">
-          <el-switch v-model="userForm.enable" active-color="#13ce66"></el-switch>
-        </el-form-item>
-        <el-form-item prop="groupId" label="组">
-          <tree-select v-model="userForm.groupId" :list="groupList" @select="selectGroup"></tree-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button type="primary" @click="submit">提交</el-button>
-        <el-button @click="close">关闭</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog></el-dialog>
-  </div>
+        <el-table-column slot="append" label="操作">
+          <template slot-scope="scope">
+            <el-row align="center">
+              <el-button
+                size="mini"
+                type="text"
+                @click="update(scope.row)"
+                icon="el-icon-third-edit-fill"
+                title="编辑"
+              ></el-button>
+              <el-button size="mini" type="text" icon="el-icon-third-key" title="修改密码"></el-button>
+            </el-row>
+          </template>
+        </el-table-column>
+        <template slot="status" slot-scope="scope">
+          <el-tag :type="scope.row.enable?'success':'danger'">{{scope.row.enable?'已启用':'已禁用'}}</el-tag>
+        </template>
+      </table-list>
+      <el-dialog :title="title" :visible.sync="showDialog">
+        <el-form
+          ref="userForm"
+          :model="userForm"
+          size="medium"
+          label-width="100px"
+          :rules="rules"
+          status-icon
+        >
+          <el-form-item prop="id" v-show="false">
+            <el-input v-model="userForm.id"></el-input>
+          </el-form-item>
+          <el-form-item prop="userName" label="用户名">
+            <el-input v-model.trim="userForm.userName" :readonly="edit"></el-input>
+          </el-form-item>
+          <el-form-item prop="nickName" label="昵称">
+            <el-input v-model.trim="userForm.nickName"></el-input>
+          </el-form-item>
+          <el-form-item prop="phone" label="手机">
+            <el-input v-model.trim="userForm.phone"></el-input>
+          </el-form-item>
+          <el-form-item prop="email" label="邮箱">
+            <el-input v-model.trim="userForm.email" type="email"></el-input>
+          </el-form-item>
+          <el-form-item prop="enable" label="启用">
+            <el-switch v-model="userForm.enable" active-color="#13ce66"></el-switch>
+          </el-form-item>
+          <el-form-item prop="groupId" label="组">
+            <tree-select v-model="userForm.groupId" :list="groupList" @select="selectGroup"></tree-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer">
+          <el-button type="primary" @click="submit">提交</el-button>
+          <el-button @click="close">关闭</el-button>
+        </div>
+      </el-dialog>
+    </el-col>
+  </el-row>
 </template>
+<style lang="less" scoped>
+  .filter-input{
+    margin-bottom: 10px;
+  }
+</style>
 
 <script>
 import TableList from "@/components/table-list";
@@ -78,44 +93,63 @@ export default {
   name: "UserList",
   components: { TableList, TreeSelect },
   data() {
-    let checkNickName = (rule,value,callback)=>{
-        if(!value){
-          callback(new Error("昵称不能为空"));
-        }
-        this.$http.get('/user/check',{id:this.userForm.id,nickName:this.userForm.nickName}).then((json)=>{
-            if(json.code == '1'){
-              callback();
-            }else{
-              callback(new Error(json.msg));
-            }
+    let checkNickName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("昵称不能为空"));
+      }
+      this.$http
+        .get("/user/check", {
+          id: this.userForm.id,
+          nickName: this.userForm.nickName
+        })
+        .then(json => {
+          if (json.code == "1") {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
         });
     };
-    let checkPhone = (rule,value,callback)=>{
-        if(!value){
-          callback(new Error("手机号不能为空"));
-        }
-        this.$http.get('/user/check',{id:this.userForm.id,phone:this.userForm.phone}).then((json)=>{
-            if(json.code == '1'){
-              callback();
-            }else{
-              callback(new Error(json.msg));
-            }
+    let checkPhone = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("手机号不能为空"));
+      }
+      this.$http
+        .get("/user/check", {
+          id: this.userForm.id,
+          phone: this.userForm.phone
+        })
+        .then(json => {
+          if (json.code == "1") {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
         });
     };
-    let checkEmail = (rule,value,callback)=>{
-        if(!value){
-          callback(new Error("邮箱不能为空"));
-        }
-        this.$http.get('/user/check',{id:this.userForm.id,email:this.userForm.email}).then((json)=>{
-            if(json.code == '1'){
-              callback();
-            }else{
-              callback(new Error(json.msg));
-            }
+    let checkEmail = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("邮箱不能为空"));
+      }
+      this.$http
+        .get("/user/check", {
+          id: this.userForm.id,
+          email: this.userForm.email
+        })
+        .then(json => {
+          if (json.code == "1") {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
         });
     };
     return {
-      edit:false,
+      filterText: '',
+      treeProp: {
+        label: "name"
+      },
+      edit: false,
       showDialog: false,
       groupList: [],
       userForm: {
@@ -153,7 +187,7 @@ export default {
             trigger: ["blur", "change"]
           },
           {
-            validator:checkNickName,
+            validator: checkNickName,
             trigger: ["blur"]
           }
         ],
@@ -170,7 +204,7 @@ export default {
             trigger: ["blur", "change"]
           },
           {
-            validator:checkPhone,
+            validator: checkPhone,
             trigger: ["blur"]
           }
         ],
@@ -185,8 +219,8 @@ export default {
             message: "邮箱格式不正确",
             trigger: ["blur", "change"]
           },
-           {
-            validator:checkEmail,
+          {
+            validator: checkEmail,
             trigger: ["blur"]
           }
         ],
@@ -251,32 +285,48 @@ export default {
           }
         }
       ],
-      showIndex: false
+      showIndex: false,
+      select:false
     };
   },
-  computed:{
-    title(){
-      return this.edit?'编辑':'新增';
+  mounted() {
+    this.getGroup();
+  },
+  computed: {
+    title() {
+      return this.edit ? "编辑" : "新增";
+    }
+  },
+  watch: {
+    filterText(val) {
+      this.$refs.departTree.filter(val);
     }
   },
   methods: {
+    nodeClick(data,node,$node){
+      this.$refs.userTable.reload({groupId:data.id});
+    },
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
+    },
+    getGroup() {
+      this.$http.get("/group/list").then(json => {
+        this.groupList = json.data;
+      });
+    },
     update(row) {
       this.showDialog = true;
       this.edit = true;
       this.userForm = Object.assign(this.userForm, row);
-      this.$http.get("/user/"+row.userName+"/group").then((json)=>{
-        if(json.code == '1' ){
-          this.userForm.groupId = json.data?''+json.data.id:'';
-        }
-      })
-      this.$http.get('/group/list').then(json => {
+      this.$http.get("/user/" + row.userName + "/group").then(json => {
         if (json.code == "1") {
-          this.groupList = json.data;
+          this.userForm.groupId = json.data ? "" + json.data.id : "";
         }
       });
     },
-    selectGroup:function(group){
-      this.userForm.groupId = ''+group.id;
+    selectGroup: function(group) {
+      this.userForm.groupId = "" + group.id;
     },
     add() {
       this.userForm = {
@@ -286,7 +336,7 @@ export default {
         phone: "",
         email: "",
         enable: true,
-        groupId: ''
+        groupId: ""
       };
       this.showDialog = true;
       this.edit = false;

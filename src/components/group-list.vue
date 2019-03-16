@@ -4,6 +4,7 @@
       <el-button @click="show" type="primary" size="mini">新增</el-button>
     </div>
     <el-tree
+      class="group-tree"
       :data="groupList"
       node-key="id"
       default-expand-all
@@ -35,7 +36,7 @@
       </span>
     </el-tree>
     <el-dialog :visible.sync="showDialog" :title="dialogTitle" :modal="false">
-      <el-form :model="groupForm" label-width="100px" :rules="rules" status-icon ref="groupForm" >
+      <el-form :model="groupForm" label-width="100px" :rules="rules" status-icon ref="groupForm">
         <el-form-item prop="id" v-show="false">
           <el-input v-model.number="groupForm.id"></el-input>
         </el-form-item>
@@ -56,32 +57,7 @@
     </el-dialog>
   </div>
 </template>
-<style lang="less" >
-.el-tree-node__content {
-  height: 40px;
-  line-height: 40px;
-  .custom-tree-node {
-    width: 100%;
-    padding-left: 10px;
-    .tree-node-ops {
-      padding-left: 100px;
-      > button {
-        display: none;
-      }
-    }
-  }
-}
 
-.el-tree-node__content:hover {
-  .custom-tree-node {
-    .tree-node-ops {
-      > button {
-        display: inline-block;
-      }
-    }
-  }
-}
-</style>
 
 <style lang="less" scoped>
 .btn-bar {
@@ -96,18 +72,23 @@ export default {
   name: "GroupList",
   components: { TableList },
   data() {
-    let checkName = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("名称不能为空"));
-          return;
-       }
-       this.$http.get("/group/check",{id:this.groupForm.id,name:this.groupForm.name}).then((json)=>{
-          if(json.code == '1'){
+    let checkName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("名称不能为空"));
+        return;
+      }
+      this.$http
+        .get("/group/check", {
+          id: this.groupForm.id,
+          name: this.groupForm.name
+        })
+        .then(json => {
+          if (json.code == "1") {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
     return {
       treeProp: {
@@ -117,7 +98,7 @@ export default {
       groupForm: {
         id: "",
         name: "",
-        desc: '',
+        desc: "",
         pid: 0
       },
       showDialog: false,
@@ -137,7 +118,7 @@ export default {
             trigger: ["blur", "change"]
           },
           {
-            validator:checkName,
+            validator: checkName,
             trigger: ["blur", "change"]
           }
         ],
@@ -164,8 +145,8 @@ export default {
       this.dialogTitle = "新增";
       this.groupForm = {
         id: "",
-        name:'',
-        desc:"",
+        name: "",
+        desc: "",
         pid: 0
       };
     },
@@ -173,8 +154,8 @@ export default {
       this.showDialog = true;
       this.groupForm = {
         id: "",
-        name:'',
-        desc:"",
+        name: "",
+        desc: "",
         pid: data.id
       };
     },

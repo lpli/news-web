@@ -49,7 +49,7 @@ export default {
         name: ""
       },
       show: false,
-      loading:false,
+      loading: false,
       treeProps: {
         label: "name"
       }
@@ -105,13 +105,19 @@ export default {
   },
   mounted() {
     this.$watch("value", (nVal, oVal) => {
-        if(nVal == ''){
-            this.selected = {
-                id:'',
-                name:''
-            }
+      if (nVal == "") {
+        this.selected = {
+          id: "",
+          name: ""
+        };
+      } else {
+        let arr = this.list.filter(val => {
+          return val.id == nVal;
+        });
+        if (arr.length > 0) {
+          this.selected = arr[0];
         }
-        
+      }
     });
     this.$watch("list", (nVal, oVal) => {
       let currentVal = this.value;

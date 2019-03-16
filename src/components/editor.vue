@@ -16,6 +16,7 @@
           @blur="onEditorBlur($event)"
           @focus="onEditorFocus($event)"
           @ready="onEditorReady($event)"
+          v-loading="loading"
         >
           <div id="toolbar" slot="toolbar">
             <!-- Add a bold button -->
@@ -82,7 +83,7 @@
       <el-button type="infor">发布</el-button>
       <el-button type="infor" @click="previewClick">预览</el-button>
     </div>
-    <el-dialog title="预览" :visible.sync="dialogVisible" width="70%">
+    <el-dialog title="预览" :visible.sync="dialogVisible" width="70%" fullscreen >
       <div class="ql-editor preview" v-html="artical.content"></div>
     </el-dialog>
   </div>
@@ -111,8 +112,7 @@
 .ql-container {
   min-height: 200px;
   .ql-editor p {
-    margin-bottom: 1.5em;
-    line-height: 2em;
+    margin-bottom: 1em;
   }
 }
 .preview p {
@@ -164,6 +164,7 @@ import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
 import ImageResize from "quill-image-resize-module-fix";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
+// import { VideoExtend, QuillVideoWatch } from './quill-video-extend-module';
 import { MessageBox } from "element-ui";
 
 Quill.register("modules/imageResize", ImageResize);
@@ -176,6 +177,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       artical: {
         id: "",
         title: "",
@@ -230,17 +232,17 @@ export default {
             response: res => {
               return res.data;
             },
-            start: ()=>{
-
+            start: () => {
+              this.loading = true;
             },
-            end:()=>{
-
+            end: () => {
+              this.loading = false;
             },
-            error:()=>{
+            error: () => {
               this.$message({
-                type:'error',
-                message:'上传异常'
-              })
+                type: "error",
+                message: "上传异常"
+              });
             }
           },
           clipboard: {

@@ -99,8 +99,37 @@ html {
   text-align: center;
 }
 .main-scrollbar {
+  height: 100%;
   .el-scrollbar__wrap {
-    overflow-x: hidden;
+     overflow-x: hidden;
+     .el-main{
+       height: 100%;
+     }
+  }
+}
+
+.el-tree-node__content {
+  height: 40px;
+  line-height: 40px;
+  .custom-tree-node {
+    width: 100%;
+    padding-left: 10px;
+    .tree-node-ops {
+      padding-left: 100px;
+      > button {
+        display: none;
+      }
+    }
+  }
+}
+
+.el-tree-node__content:hover {
+  .custom-tree-node {
+    .tree-node-ops {
+      > button {
+        display: inline-block;
+      }
+    }
   }
 }
 </style>

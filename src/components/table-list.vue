@@ -1,7 +1,7 @@
 <template>
   <div class="table-list">
     <slot name="opsbar"></slot>
-    <el-table :data="rows" stripe v-loading="loading">
+    <el-table :data="rows" stripe v-loading="loading" tooltip-effect="light">
       <el-table-column type="selection" width="55" v-if="select"></el-table-column>
       <el-table-column type="index" v-if="showIndex"></el-table-column>
       <slot name="prepend"/>
@@ -130,6 +130,10 @@ export default {
         .catch(() => {
           this.loading = false;
         });
+    },
+    reload(param){
+      this.param = Object.assign(this.param,param);
+      this.getData();
     },
     //分页事件回调函数
     sizeChange(size) {

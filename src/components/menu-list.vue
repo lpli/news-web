@@ -20,7 +20,7 @@
       ref="menuTree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span class="tree-node-label">{{ node.label }}</span>
+        <span class="tree-node-label">{{ node.label }}<span>[{{data.seq}}]</span></span>
         <span class="tree-node-ops">
           <el-button type="text" @click.stop="append(node,data)">
             <i class="el-icon-circle-plus"></i>
@@ -62,32 +62,7 @@
     </el-dialog>
   </div>
 </template>
-<style lang="less" >
-.el-tree-node__content {
-  height: 40px;
-  line-height: 40px;
-  .custom-tree-node {
-    width: 100%;
-    padding-left: 10px;
-    .tree-node-ops {
-      padding-left: 100px;
-      > button {
-        display: none;
-      }
-    }
-  }
-}
 
-.el-tree-node__content:hover {
-  .custom-tree-node {
-    .tree-node-ops {
-      > button {
-        display: inline-block;
-      }
-    }
-  }
-}
-</style>
 
 <style lang="less" scoped>
 .btn-bar {
