@@ -155,7 +155,7 @@ export default {
           },
           {
             type: "string",
-            pattern: /^\/[A-Za-z0-9]+(\/[A-Za-z0-9]+)*$/,
+            pattern: /^\/[A-Za-z0-9\*]+(\/[A-Za-z0-9\*]+)*$/,
             message: "URL格式不正确",
             trigger: ["blur", "change"]
           },

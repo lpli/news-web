@@ -67,7 +67,7 @@
           <el-form-item prop="enable" label="启用">
             <el-switch v-model="userForm.enable" active-color="#13ce66"></el-switch>
           </el-form-item>
-          <el-form-item prop="groupId" label="组">
+          <el-form-item prop="groupId" label="部门">
             <tree-select v-model="userForm.groupId" :list="groupList" @select="selectGroup"></tree-select>
           </el-form-item>
         </el-form>
@@ -234,7 +234,7 @@ export default {
         groupId: [
           {
             required: true,
-            message: "组不能为空",
+            message: "部门不能为空",
             trigger: ["blur", "change"]
           }
         ]

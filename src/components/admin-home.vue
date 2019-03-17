@@ -24,12 +24,14 @@
   </el-container>
 </template>
 <style lang="less">
+@hbgcolor:#409EFF;
+@bgcolor: #409EFF;
+@tcolor: #fff;
 .aside-op {
   line-height: 60px;
-  font-size: 40px;
-  display: inline-block;
+  font-size: 30px;
+  display: inline;
   padding: 0px 15px;
-  color: #999;
   cursor: pointer;
 }
 
@@ -47,6 +49,13 @@
       }
     }
   }
+  .sidebar-container {
+    .sidebar-title {
+      .sidebar-title-text {
+        display: none;
+      }
+    }
+  }
 }
 .el-aside {
   box-shadow: -1px 0px 2px 2px #f5f7fa;
@@ -55,6 +64,13 @@
   transition-timing-function: ease-in-out;
   -webkit-transition-timing-function: ease-in-out;
   width: 200px !important;
+  .sidebar-container {
+    .sidebar-title {
+      .sidebar-title-text {
+        display: inline;
+      }
+    }
+  }
 }
 
 .header-bar {
@@ -101,10 +117,10 @@ html {
 .main-scrollbar {
   height: 100%;
   .el-scrollbar__wrap {
-     overflow-x: hidden;
-     .el-main{
-       height: 100%;
-     }
+    overflow-x: hidden;
+    .el-main {
+      height: 100%;
+    }
   }
 }
 
@@ -131,6 +147,49 @@ html {
       }
     }
   }
+}
+
+.sidebar-container {
+  height: 100%;
+  .sider-scrollbar {
+    width: 100%;
+    height: 100%;
+    .sidebar-title {
+      background: @hbgcolor;
+      color: @tcolor;
+      height: 60px;
+      line-height: 60px;
+      text-align: center;
+      font-size: 22px;
+      .el-icon {
+        font-size: 22px;
+      }
+      .sidebar-title-text {
+        padding: 10px;
+      }
+    }
+    .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+  }
+}
+
+.el-menu-vertical-demo {
+  .el-submenu__title:hover {
+    background: @bgcolor;
+    color: @tcolor;
+    i {
+      color: @tcolor;
+    }
+  }
+  .el-menu-item:focus, .el-menu-item:hover,.el-menu-item.is-active{
+    background: @bgcolor;
+    color: @tcolor;
+    i {
+      color: @tcolor;
+    }
+  }
+  
 }
 </style>
 
