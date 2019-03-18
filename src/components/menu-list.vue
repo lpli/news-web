@@ -39,8 +39,8 @@
         <el-form-item prop="id" v-show="false">
           <el-input v-model="menuForm.id"></el-input>
         </el-form-item>
-        <el-form-item prop="seq" label="编号">
-          <el-input v-model.number="menuForm.seq"></el-input>
+        <el-form-item prop="code" label="编号">
+          <el-input v-model.number="menuForm.code"></el-input>
         </el-form-item>
         <el-form-item prop="name" label="名称">
           <el-input v-model="menuForm.name"></el-input>
@@ -53,6 +53,9 @@
         </el-form-item>
         <el-form-item prop="icon" label="图标">
           <el-input v-model="menuForm.icon"></el-input>
+        </el-form-item>
+          <el-form-item prop="seq" label="排序编号">
+          <el-input v-model="menuForm.seq"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -92,9 +95,24 @@ export default {
           }
         });
     };
-    let checkSeq = (rule, value, callback) => {
+    let checkCode = (rule, value, callback) => {
       if (!value) {
         callback(new Error("编号不能为空"));
+        return;
+      }
+      this.$http
+        .get("/menu/check", { id: this.menuForm.id, code: this.menuForm.code })
+        .then(json => {
+          if (json.code == 1) {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
+        });
+    };
+    let checkSeq = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("排序编号不能为空"));
         return;
       }
       this.$http
@@ -134,7 +152,8 @@ export default {
         name: "",
         url: "",
         pid: 0,
-        icon: ""
+        icon: "",
+        seq: ''
       },
       showDialog: false,
       dialogTitle: "",
@@ -144,14 +163,30 @@ export default {
           {
             type: "integer",
             range: {
-              max: 9999999,
+              max: 999999,
               min: 0
             },
-            message: "数字编号最大8位",
+            message: "数字编号最大6位",
             trigger: ["blur", "change"]
           },
           {
             validator: checkSeq,
+            trigger: ["blur", "change"]
+          }
+        ],
+        code: [
+          { required: true, message: "请输入数字编号", trigger: "blur" },
+          {
+            type: "integer",
+            range: {
+              max: 999999,
+              min: 0
+            },
+            message: "数字编号最大6位",
+            trigger: ["blur", "change"]
+          },
+          {
+            validator: checkCode,
             trigger: ["blur", "change"]
           }
         ],
@@ -209,14 +244,10 @@ export default {
       this.showDialog = false;
     },
     showTips() {
-      this.$message({
-        message: "亲！编号会决定菜单顺序哦~",
-        type: "warning"
-      });
+      
     },
     show() {
       this.showDialog = true;
-      this.showTips();
       this.dialogTitle = "新增";
       this.menuForm = {
         id: "",
@@ -224,7 +255,8 @@ export default {
         name: "",
         url: "",
         pid: 0,
-        icon: ""
+        icon: "",
+        code:''
       };
     },
     append(node, data) {
@@ -232,16 +264,16 @@ export default {
       this.showTips();
       this.menuForm = {
         id: "",
-        seq: data.seq,
+        code: data.code,
         name: "",
         url: "",
         pid: data.id,
-        icon: ""
+        icon: "",
+        seq:''
       };
     },
     edit(node, data) {
       this.showDialog = true;
-      this.showTips();
       this.dialogTitle = "编辑";
       let d = Object.assign({}, data);
       this.menuForm = d;
