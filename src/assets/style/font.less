@@ -1,3 +1,12 @@
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  word-break: keep-all;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 80px;
+}
+
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=SimSun]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=SimSun]::before {
   content: "宋体";
@@ -45,34 +54,98 @@
   content: "sans-serif";
   font-family: "sans-serif";
 }
+.ql-snow .ql-picker.ql-size,
+.ql-snow .ql-picker.ql-size .ql-picker-options,
+.ql-snow .ql-picker.ql-size .ql-picker-item{
+  min-width: 0;
+  width:50px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label:not([data-value])::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item:not([data-value])::before{
+  content: "16";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value='12px']::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value='12px']::before {
+  content: "12";
+  font-size: 12px;
+}
 
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value='14px']::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value='14px']::before {
-  content: "14px";
+  content: "14";
   font-size: 14px;
 }
 
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value='16px']::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value='16px']::before {
-  content: "16px";
+  content: "16";
   font-size: 16px;
 }
 
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value='18px']::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value='18px']::before {
-  content: "18px";
+  content: "18";
   font-size: 18px;
 }
 
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value='20px']::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value='20px']::before {
-  content: "20px";
+  content: "20";
   font-size: 20px;
 }
 
+.ql-snow .ql-picker.ql-align .ql-picker-label::after {
+  content: "";
+}
+.ql-snow .ql-picker .ql-picker-label:focus,.ql-snow .ql-picker .ql-picker-item:focus{
+  outline: none;
+}
+.ql-snow .ql-picker.ql-align .ql-picker-item {
+  width: 100px;
+  line-height: 22px;
+  vertical-align: middle;
+  height: 24px;
+  position: relative;
+}
+
+.ql-snow .ql-picker.ql-align .ql-picker-item svg {
+  width: 18px;
+  position: absolute;
+  top: 4px;
+}
+
+.ql-snow .ql-picker.ql-align .ql-picker-item:not([data-value])::after{
+    content:'左对齐';
+    line-height: 22px;
+    height: 24px;
+    padding-left: 22px;
+}
+
+.ql-snow .ql-picker.ql-align .ql-picker-item[data-value='right']::after {
+  content: "右对齐";
+  line-height: 22px;
+  height: 24px;
+  padding-left: 22px;
+}
+
+.ql-snow .ql-picker.ql-align .ql-picker-item[data-value='center']::after {
+  content: "居中对齐";
+  line-height: 22px;
+  height: 24px;
+  padding-left: 22px;
+}
+
+.ql-snow .ql-picker.ql-align .ql-picker-item[data-value='justify']::after {
+  content: "两端对齐";
+  line-height: 22px;
+  height: 24px;
+  padding-left: 22px;
+}
+
+
 .ql-size-14px {
-	font-size: 14px;
-  }
+  font-size: 14px;
+}
 
 .ql-size-16px {
   font-size: 16px;
@@ -121,38 +194,45 @@
 
 .ql-editor .ql-indent-1 {
   text-indent: 2em;
-  padding-left:0 !important;
-}
-.ql-editor .ql-indent-2 {
-	text-indent: 4em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-3 {
-	text-indent: 6em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-4{
-	text-indent: 8em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-5 {
-	text-indent: 10em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-6 {
-	text-indent: 12em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-7 {
-	text-indent: 14em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-8{
-	text-indent: 16em;
-	padding-left:0 !important;
-}
-.ql-editor .ql-indent-9 {
-	text-indent: 18em;
-	padding-left:0 !important;
+  padding-left: 0 !important;
 }
 
+.ql-editor .ql-indent-2 {
+  text-indent: 4em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-3 {
+  text-indent: 6em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-4 {
+  text-indent: 8em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-5 {
+  text-indent: 10em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-6 {
+  text-indent: 12em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-7 {
+  text-indent: 14em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-8 {
+  text-indent: 16em;
+  padding-left: 0 !important;
+}
+
+.ql-editor .ql-indent-9 {
+  text-indent: 18em;
+  padding-left: 0 !important;
+}
