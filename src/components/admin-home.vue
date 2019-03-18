@@ -59,10 +59,10 @@
 }
 .el-aside {
   box-shadow: -1px 0px 2px 2px #f5f7fa;
-  transition: width 0.3s;
-  -webkit-transition: width 0.3s;
-  transition-timing-function: ease-in-out;
-  -webkit-transition-timing-function: ease-in-out;
+  transition: width 0.4s;
+  -webkit-transition: width 0.4s;
+  transition-timing-function: ease;
+  -webkit-transition-timing-function: ease;
   width: 200px !important;
   .sidebar-container {
     .sidebar-title {
@@ -160,7 +160,7 @@ html {
       height: 60px;
       line-height: 60px;
       text-align: center;
-      font-size: 22px;
+      font-size: 18px;
       .el-icon {
         font-size: 22px;
       }
