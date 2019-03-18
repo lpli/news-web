@@ -6,7 +6,7 @@
     popper-class="user-profile-popper"
   >
     <ul class="user-ul">
-      <li class="user-li">设置</li>
+      <li class="user-li">{{userName}}</li>
       <li class="user-seprator"></li>
       <li class="user-li" @click="logout">退出</li>
     </ul>
@@ -70,13 +70,18 @@ import img from "@/assets/logo.png";
 export default {
   name: "user-profile",
   data() {
-    return {};
+    return {
+      userName:''
+    };
   },
   props: {
     imgSrc: {
       type: String,
       default: img
     }
+  },
+  mounted(){
+    this.userName = this.$storage.getObj("userInfo").userName;
   },
   methods:{
     logout(){
