@@ -8,6 +8,7 @@ import Vtip from 'vtip'
 import 'vtip/lib/index.min.css'
 // 注册指令使用
 Vue.use(Vtip.directive)
+Vue.prototype.$tip = Vtip.tip;
 // require('../../util/mock');
 import "@/assets/icon/iconfont.css";
 Vue.use(ElementUI);
