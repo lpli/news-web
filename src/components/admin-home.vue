@@ -9,9 +9,7 @@
           <div class="header-title">
             <i :class="['aside-op',iconName]" @click="collapseClick"></i>
           </div>
-          <user-profile
-            imgSrc="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
-          ></user-profile>
+          <user-profile></user-profile>
         </el-row>
       </el-header>
 

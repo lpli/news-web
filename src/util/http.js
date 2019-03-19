@@ -95,6 +95,9 @@ MyPlugin.install = function (Vue, options) {
     put: function (key, value) {
       localStorage.setItem(key, value);
     },
+    putObj: function (key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
     getObj: function (key) {
       return JSON.parse(localStorage.getItem(key))
     },

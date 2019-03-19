@@ -20,7 +20,7 @@
       ref="menuTree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span class="tree-node-label">{{ node.label }}<span>[{{data.seq}}]</span></span>
+        <span class="tree-node-label">{{ node.label }}</span>
         <span class="tree-node-ops">
           <el-button type="text" @click.stop="append(node,data)">
             <i class="el-icon-circle-plus"></i>
@@ -55,7 +55,7 @@
           <el-input v-model="menuForm.icon"></el-input>
         </el-form-item>
           <el-form-item prop="seq" label="排序编号">
-          <el-input v-model="menuForm.seq"></el-input>
+          <el-input v-model.number="menuForm.seq"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -153,20 +153,16 @@ export default {
         url: "",
         pid: 0,
         icon: "",
-        seq: ''
+        code: ''
       },
       showDialog: false,
       dialogTitle: "",
       rules: {
         seq: [
-          { required: true, message: "请输入数字编号", trigger: "blur" },
+          { required: true, message: "请输入数字", trigger: "blur" },
           {
             type: "integer",
-            range: {
-              max: 999999,
-              min: 0
-            },
-            message: "数字编号最大6位",
+            message: "数字",
             trigger: ["blur", "change"]
           },
           {
@@ -182,7 +178,7 @@ export default {
               max: 999999,
               min: 0
             },
-            message: "数字编号最大6位",
+            message: "1~6位数字编号",
             trigger: ["blur", "change"]
           },
           {
@@ -251,7 +247,7 @@ export default {
       this.dialogTitle = "新增";
       this.menuForm = {
         id: "",
-        seq: "",
+        seq: 1,
         name: "",
         url: "",
         pid: 0,
@@ -269,7 +265,7 @@ export default {
         url: "",
         pid: data.id,
         icon: "",
-        seq:''
+        seq: 1
       };
     },
     edit(node, data) {
