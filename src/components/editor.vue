@@ -21,23 +21,22 @@
           <div id="toolbar" slot="toolbar">
             <!-- Add a bold button -->
             <span class="ql-formats">
-              <button class="ql-bold" v-tip.top.dark.hover="tips.bold">Bold</button>
-              <button class="ql-italic" v-tip.top.dark.hover="tips.italic">Italic</button>
-              <button class="ql-underline" v-tip.top.dark.hover="tips.underline">Underline</button>
-              <button class="ql-strike" v-tip.top.dark.hover="tips.strike">Strike</button>
-              <select  class="ql-header">
-                <option selected >普通文本</option>
+              <button class="ql-bold">Bold</button>
+              <button class="ql-italic">Italic</button>
+              <button class="ql-underline">Underline</button>
+              <button class="ql-strike">Strike</button>
+              <select class="ql-header">
+                <option selected>普通文本</option>
                 <option value="1">标题1</option>
                 <option value="2">标题2</option>
                 <option value="3">标题3</option>
                 <option value="4">标题4</option>
               </select>
-              <button class="ql-list" value="ordered" v-tip.top.dark.hover="tips.order">ordered</button>
-              <button class="ql-list" value="bullet" v-tip.top.dark.hover="tips.list">bullet</button>
-              <button class="ql-indent" value="-1" v-tip.top.dark.hover="tips.minIndent">indent-1</button>
-              <button class="ql-indent" value="+1" v-tip.top.dark.hover="tips.addIndent">indent+1</button>
-              <select class="ql-align" >
-              </select>
+              <button class="ql-list" value="ordered">ordered</button>
+              <button class="ql-list" value="bullet">bullet</button>
+              <button class="ql-indent" value="-1">indent-1</button>
+              <button class="ql-indent" value="+1">indent+1</button>
+              <select class="ql-align"></select>
               <select class="ql-size">
                 <option selected></option>
                 <option value="12px"></option>
@@ -55,22 +54,22 @@
                 <option value="Times-New-Roman"></option>
                 <option value="sans-serif"></option>
               </select>
-              <select class="ql-color" ></select>
-              <select class="ql-background" ></select>
-              <button class="ql-image" v-tip.top.dark.hover="tips.image"></button>
-              <button class="ql-video" v-tip.top.dark.hover="tips.video"></button>
-              <button class="ql-link" v-tip.top.dark.hover="tips.link"></button>
-              <button class="ql-clean" v-tip.top.dark.hover="tips.clean"></button>
-              <button id="undo" @click="undoClick" v-tip.top.dark.hover="tips.undo" type="button">
+              <select class="ql-color"></select>
+              <select class="ql-background"></select>
+              <button class="ql-image"></button>
+              <button class="ql-video"></button>
+              <button class="ql-link"></button>
+              <button class="ql-clean"></button>
+              <button id="undo" @click="undoClick" type="button" class="undo">
                 <i class="el-icon-third-undo1"></i>
               </button>
-              <button id="redo" @click="redoClick" v-tip.top.dark.hover="tips.redo" type="button">
+              <button id="redo" @click="redoClick" type="button" class="redo">
                 <i class="el-icon-third-redo1"></i>
               </button>
-              <button id="html" @click="htmlClick" v-tip.top.dark.hover="tips.code" type="button">
+              <button id="html" @click="htmlClick" type="button" class="html">
                 <i class="el-icon-third-html"></i>
               </button>
-              <button id="preview" @click="previewClick" v-tip.top.dark.hover="tips.preview" type="button">
+              <button id="preview" @click="previewClick" type="button" class="preview">
                 <i class="el-icon-third-eye"></i>
               </button>
             </span>
@@ -169,7 +168,6 @@ import ImageResize from "quill-image-resize-module-fix";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
 // import { VideoExtend, QuillVideoWatch } from './quill-video-extend-module';
 import { MessageBox } from "element-ui";
-
 Quill.register("modules/imageResize", ImageResize);
 Quill.register("modules/ImageExtend", ImageExtend);
 
@@ -180,30 +178,6 @@ export default {
   },
   data() {
     return {
-      tips:{
-        bold:'加粗',
-        italic:'斜体',
-        underline:'下划线',
-        strike:'删除线',
-        header1:'标题1',
-        header2:'标题2',
-        order:'项目编号',
-        list:'无序列表',
-        addIndent:'增加缩进',
-        minIndent:'减少缩进',
-        undo:'回撤',
-        redo:'重做',
-        code:'HTML代码',
-        preview:'预览',
-        color:'文字颜色',
-        size:'字号',
-        font:'字体',
-        background:'背景色',
-        image:'插入图片',
-        video:'视频',
-        link:'链接',
-        clean:'清除样式'
-      },
       loading: false,
       artical: {
         id: "",
@@ -308,15 +282,9 @@ export default {
     };
   },
   methods: {
-    onEditorBlur(quill) {
-      console.log("editor blur!", quill);
-    },
-    onEditorFocus(quill) {
-      console.log("editor focus!", quill);
-    },
-    onEditorReady(quill) {
-      console.log("editor ready!", quill);
-    },
+    onEditorBlur(quill) {},
+    onEditorFocus(quill) {},
+    onEditorReady(quill) {},
     undoClick() {
       this.$refs[this.id].quill.history.undo();
     },
@@ -349,15 +317,58 @@ export default {
       "Times-New-Roman",
       "sans-serif"
     ];
-    var sizes = ["12px","14px", "16px", "18px", "20px"];
+    var sizes = ["12px", "14px", "16px", "18px", "20px"];
     var Font = Quill.import("formats/font");
     var Size = Quill.import("formats/size");
     Font.whitelist = fonts; //将字体加入到白名单
     Size.whitelist = sizes; //将字体加入到白名单
     Quill.register(Font, true);
     Quill.register(Size, true);
+
+    const titleConfig = {
+      "ql-bold": "粗体",
+      "ql-color": "文字颜色",
+      "ql-font": "字体",
+      "ql-code": "插入代码",
+      "ql-italic": "斜体",
+      "ql-link": "链接",
+      "ql-background": "背景颜色",
+      "ql-size": "字号",
+      "ql-strike": "删除线",
+      "ql-script": "上标/下标",
+      "ql-underline": "下划线",
+      "ql-blockquote": "引用",
+      "ql-header": "标题",
+      "ql-indent": "缩进",
+      "ql-list": "列表",
+      "ql-align": "文本对齐",
+      "ql-direction": "文本方向",
+      "ql-code-block": "代码块",
+      "ql-formula": "公式",
+      "ql-image": "图片",
+      "ql-video": "视频",
+      "ql-clean": "清除样式",
+      "undo":'回撤',
+      'redo':'重做',
+      'html':'HTML代码',
+      'preview':'预览'
+    };
+    //提示
+    let tip = this.$tip;
+    const oToolBar = document.querySelector(".ql-toolbar"),
+      aButton = oToolBar.querySelectorAll("button"),
+      aSelect = oToolBar.querySelectorAll("select");
+    aButton.forEach(function(item) {
+      let text = titleConfig[item.classList[0]];
+      if (item.className === "ql-indent") {
+        item.value === "+1" ? (text = "增加" + text) : (text = "减少" + text);
+      }
+       text && (item.title = text);
+    });
+    aSelect.forEach(function(item) {
+      let text = titleConfig[item.classList[0]];
+      text && (item.previousElementSibling.title = text);
+    });
   }
-  // Omit the same parts as in the following component sample code
-  // ...
 };
 </script>
