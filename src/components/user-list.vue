@@ -5,7 +5,8 @@
         <el-input placeholder="输入部门名" size="small" v-model="filterText"></el-input>
       </el-row>
       <el-row>
-        <el-tree ref="departTree"
+        <el-tree
+          ref="departTree"
           :data="groupList"
           node-key="id"
           default-expand-all
@@ -16,26 +17,28 @@
       </el-row>
     </el-col>
     <el-col :span="18">
-      <table-list :columns="columns" :showIndex="showIndex" ref="userTable" :url="url" :select="select">
+      <table-list
+        :columns="columns"
+        :showIndex="showIndex"
+        ref="userTable"
+        :url="url"
+        :select="select"
+      >
         <template slot="opsbar">
           <el-row>
             <el-button size="mini" type="success" @click="add">新增</el-button>
           </el-row>
         </template>
-        <el-table-column slot="append" label="操作">
-          <template slot-scope="scope">
-            <el-row align="center">
-              <el-button
-                size="mini"
-                type="text"
-                @click="update(scope.row)"
-                icon="el-icon-third-edit-fill"
-                title="编辑"
-              ></el-button>
-              <el-button size="mini" type="text" icon="el-icon-third-key" title="修改密码"></el-button>
-            </el-row>
-          </template>
-        </el-table-column>
+        <template slot-scope="scope" slot="ops">
+          <el-row align="center">
+            <el-button
+              size="mini"
+              type="text"
+              @click="update(scope.row)"
+              icon="el-icon-third-edit-fill"
+            >编辑</el-button>
+          </el-row>
+        </template>
         <template slot="status" slot-scope="scope">
           <el-tag :type="scope.row.enable?'success':'danger'">{{scope.row.enable?'已启用':'已禁用'}}</el-tag>
         </template>
@@ -68,7 +71,10 @@
             <el-switch v-model="userForm.enable" active-color="#13ce66"></el-switch>
           </el-form-item>
           <el-form-item prop="groupId" label="部门">
-            <tree-select v-model="userForm.groupId" :list="groupList" @select="selectGroup"></tree-select>
+            <tree-select v-model.number="userForm.groupId" :list="groupList" @select="selectGroup"></tree-select>
+          </el-form-item>
+          <el-form-item prop="roleId" label="角色">
+            <tree-select v-model.number="userForm.roleId" :list="roleList" @select="selectRole"></tree-select>
           </el-form-item>
         </el-form>
         <div slot="footer">
@@ -80,9 +86,9 @@
   </el-row>
 </template>
 <style lang="less" scoped>
-  .filter-input{
-    margin-bottom: 10px;
-  }
+.filter-input {
+  margin-bottom: 10px;
+}
 </style>
 
 <script>
@@ -93,6 +99,23 @@ export default {
   name: "UserList",
   components: { TableList, TreeSelect },
   data() {
+    let checkName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("用户名不能为空"));
+      }
+      this.$http
+        .get("/user/check", {
+          id: this.userForm.id,
+          userName: this.userForm.userName
+        })
+        .then(json => {
+          if (json.code == "1") {
+            callback();
+          } else {
+            callback(new Error(json.msg));
+          }
+        });
+    };
     let checkNickName = (rule, value, callback) => {
       if (!value) {
         callback(new Error("昵称不能为空"));
@@ -145,13 +168,14 @@ export default {
         });
     };
     return {
-      filterText: '',
+      filterText: "",
       treeProp: {
         label: "name"
       },
       edit: false,
       showDialog: false,
       groupList: [],
+      roleList: [],
       userForm: {
         id: "",
         userName: "",
@@ -159,7 +183,8 @@ export default {
         phone: "",
         email: "",
         enable: true,
-        groupId: ""
+        groupId: null,
+        roleId: null
       },
       rules: {
         userName: [
@@ -172,6 +197,17 @@ export default {
             min: 8,
             max: 20,
             message: "长度为8~20",
+            trigger: ["blur", "change"]
+          },
+          {
+            validator: checkName,
+            trigger: ["blur", "change"]
+          }
+        ],
+        roleId: [
+          {
+            required: true,
+            message: "请选择角色",
             trigger: ["blur", "change"]
           }
         ],
@@ -283,14 +319,20 @@ export default {
             }
             return moment(val).format("YYYY-MM-DD");
           }
+        },
+        {
+          label: "操作",
+          slotName: "ops",
+          fixed: "right"
         }
       ],
       showIndex: false,
-      select:false
+      select: false
     };
   },
   mounted() {
     this.getGroup();
+    this.getRole();
   },
   computed: {
     title() {
@@ -303,8 +345,8 @@ export default {
     }
   },
   methods: {
-    nodeClick(data,node,$node){
-      this.$refs.userTable.reload({groupId:data.id});
+    nodeClick(data, node, $node) {
+      this.$refs.userTable.reload({ groupId: data.id });
     },
     filterNode(value, data) {
       if (!value) return true;
@@ -315,18 +357,32 @@ export default {
         this.groupList = json.data;
       });
     },
+    getRole() {
+      this.$http.get("/role/list").then(json => {
+        this.roleList = json.data;
+      });
+    },
     update(row) {
-      this.showDialog = true;
+      
       this.edit = true;
+      this.showDialog = true;
       this.userForm = Object.assign(this.userForm, row);
       this.$http.get("/user/" + row.userName + "/group").then(json => {
         if (json.code == "1") {
-          this.userForm.groupId = json.data ? "" + json.data.id : "";
+          this.userForm.groupId = json.data?json.data.id:'';
+        }
+      });
+       this.$http.get("/user/" + row.userName + "/role").then(json => {
+        if (json.code == "1") {
+          this.userForm.roleId = json.data?json.data.id:'';
         }
       });
     },
     selectGroup: function(group) {
-      this.userForm.groupId = "" + group.id;
+      this.userForm.groupId = group.id;
+    },
+    selectRole(role) {
+      this.userForm.roleId = role.id;
     },
     add() {
       this.userForm = {
@@ -336,7 +392,8 @@ export default {
         phone: "",
         email: "",
         enable: true,
-        groupId: ""
+        groupId: null,
+        roleId:null
       };
       this.showDialog = true;
       this.edit = false;

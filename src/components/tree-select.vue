@@ -9,7 +9,7 @@
         :disable-transitions="false"
         @close="close"
       >{{selected.name}}</el-tag>
-      <el-button type="text" icon="el-icon-third-organization" @click="show = true">选择</el-button>
+      <el-button type="text" icon="el-icon-third-organization" @click="showTree()">选择</el-button>
     </el-row>
 
     <el-dialog :title="title" :visible.sync="show" :append-to-body="true">
@@ -65,8 +65,8 @@ export default {
       default: "提示"
     },
     value: {
-      type: String,
-      default: ""
+      type: [Number, String],
+      default: 0
     },
     list: {
       type: Array,
@@ -79,6 +79,12 @@ export default {
     }
   },
   methods: {
+    showTree() {
+      this.show = true;
+      this.$nextTick(() => {
+        this.$refs.tree.setCheckedKeys([this.selected.id]);
+      });
+    },
     submit() {
       let arr = this.$refs.tree.getCheckedNodes();
       if (arr.length > 0) {
