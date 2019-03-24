@@ -105,10 +105,7 @@
   font-family: "Microsoft Yahei", Avenir, "Segoe UI", "Hiragino Sans GB",
     STHeiti, "Microsoft Sans Serif", "WenQuanYi Micro Hei", sans-serif;
   .ql-video {
-    min-width: 400px;
-    min-height: 300px;
-    display: block;
-    margin: auto;
+    display: inline;
   }
 }
 .ql-container {
@@ -165,10 +162,14 @@ import { quillEditor } from "vue-quill-editor";
 import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
 import ImageResize from "quill-image-resize-module-fix";
+import VideoResize from "quill-video-resize-module";
+import { VideoFormat } from "@/lib/quill-video-format";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
+
 // import { VideoExtend, QuillVideoWatch } from './quill-video-extend-module';
 import { MessageBox } from "element-ui";
 Quill.register("modules/imageResize", ImageResize);
+Quill.register("modules/videoResize", VideoResize);
 Quill.register("modules/ImageExtend", ImageExtend);
 
 export default {
@@ -199,13 +200,16 @@ export default {
               },
               video: function() {
                 MessageBox.prompt("请输入URL", "提示", {
+                  closeOnClickModal: false,
                   confirmButtonText: "确定",
                   cancelButtonText: "取消",
                   inputPattern: /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/,
                   inputErrorMessage: "URL格式不正确"
-                })
-                  .then(({ value }) => {
-                    this.quill.format("video", value);
+                }).then(({ value }) => {
+                    var pIndex = this.quill.getSelection().index;
+                    this.quill.insertEmbed(pIndex, "video", value);
+                    this.quill.update();
+                    this.quill.setSelection(pIndex + 1);
                   })
                   .catch(() => {
                     this.quill.format("video", false);
@@ -219,6 +223,14 @@ export default {
             userOnly: true
           },
           imageResize: {
+            displayStyles: {
+              backgroundColor: "black",
+              border: "none",
+              color: "white"
+            },
+            modules: ["Resize", "Toolbar", "DisplaySize"]
+          },
+          videoResize: {
             displayStyles: {
               backgroundColor: "black",
               border: "none",
@@ -324,6 +336,7 @@ export default {
     Size.whitelist = sizes; //将字体加入到白名单
     Quill.register(Font, true);
     Quill.register(Size, true);
+    Quill.register(VideoFormat, true);
 
     const titleConfig = {
       "ql-bold": "粗体",
@@ -348,10 +361,10 @@ export default {
       "ql-image": "图片",
       "ql-video": "视频",
       "ql-clean": "清除样式",
-      "undo":'回撤',
-      'redo':'重做',
-      'html':'HTML代码',
-      'preview':'预览'
+      undo: "回撤",
+      redo: "重做",
+      html: "HTML代码",
+      preview: "预览"
     };
     //提示
     let tip = this.$tip;
@@ -362,8 +375,11 @@ export default {
       let text = titleConfig[item.classList[0]];
       if (item.className === "ql-indent") {
         item.value === "+1" ? (text = "增加" + text) : (text = "减少" + text);
+      } else if (item.className == "ql-list") {
+        item.value === "ordered" ? (text = "项目编号") : (text = "无序" + text);
       }
-       text && (item.title = text);
+
+      text && (item.title = text);
     });
     aSelect.forEach(function(item) {
       let text = titleConfig[item.classList[0]];

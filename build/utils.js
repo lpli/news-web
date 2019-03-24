@@ -1,5 +1,4 @@
 'use strict'
-require('babel-polyfill')
 const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
