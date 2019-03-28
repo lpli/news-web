@@ -89,7 +89,9 @@
       <div class="ql-editor preview" v-html="artical.content"></div>
     </el-dialog>
 
-    <el-dialog></el-dialog>
+    <el-dialog>
+
+    </el-dialog>
   </div>
 </template>
 <style lang="less">
@@ -168,8 +170,7 @@ import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
 import ImageResize from "quill-image-resize-module-fix";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
-
-// import { VideoExtend, QuillVideoWatch } from './quill-video-extend-module';
+import {VideoFormat} from '@/lib/quill-video-format';
 import { MessageBox } from "element-ui";
 Quill.register("modules/imageResize", ImageResize);
 Quill.register("modules/ImageExtend", ImageExtend);
@@ -295,10 +296,10 @@ export default {
           inputErrorMessage: "URL格式不正确"
         })
           .then(({ value }) => {
-            quill.insertEmbed(pIndex, "video", value);
+            quill.insertEmbed(pIndex, "video", {src:value,width:800,height:500,align:'center'});
             quill.update();
-            quill.fomart('width',400);
             quill.setSelection(pIndex + 1);
+            
           })
           .catch(() => {
             quill.format("video", false);
@@ -395,6 +396,7 @@ export default {
     Size.whitelist = sizes; //将字体加入到白名单
     Quill.register(Font, true);
     Quill.register(Size, true);
+    Quill.register(VideoFormat, true);
 
     this.toolbarTitle();
   }
