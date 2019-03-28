@@ -88,6 +88,8 @@
     <el-dialog title="预览" :visible.sync="dialogVisible" width="70%" fullscreen>
       <div class="ql-editor preview" v-html="artical.content"></div>
     </el-dialog>
+
+    <el-dialog></el-dialog>
   </div>
 </template>
 <style lang="less">
@@ -105,7 +107,10 @@
   font-family: "Microsoft Yahei", Avenir, "Segoe UI", "Hiragino Sans GB",
     STHeiti, "Microsoft Sans Serif", "WenQuanYi Micro Hei", sans-serif;
   .ql-video {
-    display: inline;
+    iframe {
+      display: block;
+      margin: auto;
+    }
   }
 }
 .ql-container {
@@ -162,14 +167,11 @@ import { quillEditor } from "vue-quill-editor";
 import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
 import ImageResize from "quill-image-resize-module-fix";
-import VideoResize from "quill-video-resize-module";
-import { VideoFormat } from "@/lib/quill-video-format";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
 
 // import { VideoExtend, QuillVideoWatch } from './quill-video-extend-module';
 import { MessageBox } from "element-ui";
 Quill.register("modules/imageResize", ImageResize);
-Quill.register("modules/videoResize", VideoResize);
 Quill.register("modules/ImageExtend", ImageExtend);
 
 export default {
@@ -197,23 +199,6 @@ export default {
             handlers: {
               image: function() {
                 QuillWatch.emit(this.quill.id);
-              },
-              video: function() {
-                MessageBox.prompt("请输入URL", "提示", {
-                  closeOnClickModal: false,
-                  confirmButtonText: "确定",
-                  cancelButtonText: "取消",
-                  inputPattern: /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/,
-                  inputErrorMessage: "URL格式不正确"
-                }).then(({ value }) => {
-                    var pIndex = this.quill.getSelection().index;
-                    this.quill.insertEmbed(pIndex, "video", value);
-                    this.quill.update();
-                    this.quill.setSelection(pIndex + 1);
-                  })
-                  .catch(() => {
-                    this.quill.format("video", false);
-                  });
               }
             }
           },
@@ -230,14 +215,14 @@ export default {
             },
             modules: ["Resize", "Toolbar", "DisplaySize"]
           },
-          videoResize: {
-            displayStyles: {
-              backgroundColor: "black",
-              border: "none",
-              color: "white"
-            },
-            modules: ["Resize", "Toolbar", "DisplaySize"]
-          },
+          // videoResize: {
+          //   displayStyles: {
+          //     backgroundColor: "black",
+          //     border: "none",
+          //     color: "white"
+          //   },
+          //   modules: ["Resize", "Toolbar", "DisplaySize"]
+          // },
           ImageExtend: {
             loading: false,
             name: "file",
@@ -295,8 +280,31 @@ export default {
   },
   methods: {
     onEditorBlur(quill) {},
-    onEditorFocus(quill) {},
-    onEditorReady(quill) {},
+    onEditorFocus(quill) {
+      console.log(quill.getSelection());
+    },
+    onEditorReady(quill) {
+      let toolbar = quill.getModule("toolbar");
+      toolbar.addHandler("video", () => {
+        var pIndex = quill.getSelection().index;
+        MessageBox.prompt("请输入URL", "提示", {
+          closeOnClickModal: false,
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          inputPattern: /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/,
+          inputErrorMessage: "URL格式不正确"
+        })
+          .then(({ value }) => {
+            quill.insertEmbed(pIndex, "video", value);
+            quill.update();
+            quill.fomart('width',400);
+            quill.setSelection(pIndex + 1);
+          })
+          .catch(() => {
+            quill.format("video", false);
+          });
+      });
+    },
     undoClick() {
       this.$refs[this.id].quill.history.undo();
     },
@@ -308,8 +316,59 @@ export default {
     },
     previewClick() {
       this.dialogVisible = true;
+    },
+    toolbarTitle() {
+      const titleConfig = {
+        "ql-bold": "粗体",
+        "ql-color": "文字颜色",
+        "ql-font": "字体",
+        "ql-code": "插入代码",
+        "ql-italic": "斜体",
+        "ql-link": "链接",
+        "ql-background": "背景颜色",
+        "ql-size": "字号",
+        "ql-strike": "删除线",
+        "ql-script": "上标/下标",
+        "ql-underline": "下划线",
+        "ql-blockquote": "引用",
+        "ql-header": "标题",
+        "ql-indent": "缩进",
+        "ql-list": "列表",
+        "ql-align": "文本对齐",
+        "ql-direction": "文本方向",
+        "ql-code-block": "代码块",
+        "ql-formula": "公式",
+        "ql-image": "图片",
+        "ql-video": "视频",
+        "ql-clean": "清除样式",
+        undo: "回撤",
+        redo: "重做",
+        html: "HTML代码",
+        preview: "预览"
+      };
+      //提示
+      const oToolBar = document.querySelector(".ql-toolbar"),
+        aButton = oToolBar.querySelectorAll("button"),
+        aSelect = oToolBar.querySelectorAll("select");
+      aButton.forEach(function(item) {
+        let text = titleConfig[item.classList[0]];
+        if (item.className === "ql-indent") {
+          item.value === "+1" ? (text = "增加" + text) : (text = "减少" + text);
+        } else if (item.className == "ql-list") {
+          item.value === "ordered"
+            ? (text = "项目编号")
+            : (text = "无序" + text);
+        }
+
+        text && (item.title = text);
+      });
+      aSelect.forEach(function(item) {
+        let text = titleConfig[item.classList[0]];
+        text && (item.previousElementSibling.title = text);
+      });
     }
   },
+
   computed: {
     editor() {
       return this.$refs[this.id].quill;
@@ -336,55 +395,8 @@ export default {
     Size.whitelist = sizes; //将字体加入到白名单
     Quill.register(Font, true);
     Quill.register(Size, true);
-    Quill.register(VideoFormat, true);
 
-    const titleConfig = {
-      "ql-bold": "粗体",
-      "ql-color": "文字颜色",
-      "ql-font": "字体",
-      "ql-code": "插入代码",
-      "ql-italic": "斜体",
-      "ql-link": "链接",
-      "ql-background": "背景颜色",
-      "ql-size": "字号",
-      "ql-strike": "删除线",
-      "ql-script": "上标/下标",
-      "ql-underline": "下划线",
-      "ql-blockquote": "引用",
-      "ql-header": "标题",
-      "ql-indent": "缩进",
-      "ql-list": "列表",
-      "ql-align": "文本对齐",
-      "ql-direction": "文本方向",
-      "ql-code-block": "代码块",
-      "ql-formula": "公式",
-      "ql-image": "图片",
-      "ql-video": "视频",
-      "ql-clean": "清除样式",
-      undo: "回撤",
-      redo: "重做",
-      html: "HTML代码",
-      preview: "预览"
-    };
-    //提示
-    let tip = this.$tip;
-    const oToolBar = document.querySelector(".ql-toolbar"),
-      aButton = oToolBar.querySelectorAll("button"),
-      aSelect = oToolBar.querySelectorAll("select");
-    aButton.forEach(function(item) {
-      let text = titleConfig[item.classList[0]];
-      if (item.className === "ql-indent") {
-        item.value === "+1" ? (text = "增加" + text) : (text = "减少" + text);
-      } else if (item.className == "ql-list") {
-        item.value === "ordered" ? (text = "项目编号") : (text = "无序" + text);
-      }
-
-      text && (item.title = text);
-    });
-    aSelect.forEach(function(item) {
-      let text = titleConfig[item.classList[0]];
-      text && (item.previousElementSibling.title = text);
-    });
+    this.toolbarTitle();
   }
 };
 </script>
