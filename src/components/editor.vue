@@ -59,6 +59,7 @@
               <button class="ql-image"></button>
               <button class="ql-video"></button>
               <button class="ql-link"></button>
+              <!-- <button class="ql-emoji"></button> -->
               <button class="ql-clean"></button>
               <button id="undo" @click="undoClick" type="button" class="undo">
                 <i class="el-icon-third-undo1"></i>
@@ -71,6 +72,9 @@
               </button>
               <button id="preview" @click="previewClick" type="button" class="preview">
                 <i class="el-icon-third-eye"></i>
+              </button>
+              <button id="expand" @click="expand" type="button" class="expand">
+                <i class="el-icon-third-expand"></i>
               </button>
             </span>
           </div>
@@ -196,6 +200,7 @@ import hljs from "highlight.js";
 import { quillEditor } from "vue-quill-editor";
 import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
+// import {EmojiBlot,ShortNameEmoji,ToolbarEmoji,TextAreaEmoji} from "quill-emoji";
 import ImageResize from "quill-image-resize-module-fix";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
 import { VideoFormat } from "@/lib/quill-video-format";
@@ -267,6 +272,7 @@ export default {
       dialogVisible: false,
       showCode: false,
       id: "editor",
+      editorFullscreen: false,
       editorOption: {
         placeholder: "请输入...",
         modules: {
@@ -413,7 +419,8 @@ export default {
         undo: "回撤",
         redo: "重做",
         html: "HTML代码",
-        preview: "预览"
+        preview: "预览",
+        expand: "全屏"
       };
       //提示
       const oToolBar = document.querySelector(".ql-toolbar"),
@@ -435,6 +442,15 @@ export default {
         let text = titleConfig[item.classList[0]];
         text && (item.previousElementSibling.title = text);
       });
+    },
+    expand() {
+      this.$fullscreen.toggle(this.$el.querySelector(".quill-editor"), {
+        wrap: false,
+        callback: this.fullscreenChange
+      });
+    },
+    fullscreenChange(fullscreen) {
+      this.fullscreen = fullscreen;
     }
   },
 
