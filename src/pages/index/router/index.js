@@ -12,6 +12,7 @@ import MenuList from '@/components/menu-list'
 import GroupList from '@/components/group-list'
 import RoleList from '@/components/role-list'
 import OpsList from '@/components/operation-list'
+import TinyMCE from '@/components/tinymce-editor'
 Vue.use(Router)
 
 export default new Router({
@@ -45,6 +46,9 @@ export default new Router({
       path: '/editor',
       component: Editor
     }, {
+      path: '/tinymce',
+      component: TinyMCE
+    },{
       path: '/404',
       component: NotFound
     },{
