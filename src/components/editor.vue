@@ -89,8 +89,36 @@
       <div class="ql-editor preview" v-html="artical.content"></div>
     </el-dialog>
 
-    <el-dialog>
-
+    <el-dialog title="插入视频" :visible.sync="videoDialogShow">
+      <el-form
+        ref="videoForm"
+        size="small"
+        :model="videoForm"
+        label-width="100px"
+        :rules="videoRules"
+        status-icon
+      >
+        <el-form-item label="地址" prop="src">
+          <el-input v-model="videoForm.src"></el-input>
+        </el-form-item>
+        <el-form-item label="宽度" prop="width">
+          <el-input v-model.number="videoForm.width"></el-input>
+        </el-form-item>
+        <el-form-item label="高度" prop="height">
+          <el-input v-model.number="videoForm.height"></el-input>
+        </el-form-item>
+        <el-form-item label="对齐方式" prop="align">
+          <el-radio-group v-model="videoForm.align">
+            <el-radio-button label="left">左对齐</el-radio-button>
+            <el-radio-button label="center">居中</el-radio-button>
+            <el-radio-button label="right">右对齐</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button type="primary" size="small" @click="videoHandler">确认</el-button>
+        <el-button size="small" @click="videoDialogShow = false">取消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -170,7 +198,7 @@ import * as Quill from "quill"; //引入编辑器
 import Delta from "quill-delta";
 import ImageResize from "quill-image-resize-module-fix";
 import { container, ImageExtend, QuillWatch } from "quill-image-extend-module";
-import {VideoFormat} from '@/lib/quill-video-format';
+import { VideoFormat } from "@/lib/quill-video-format";
 import { MessageBox } from "element-ui";
 Quill.register("modules/imageResize", ImageResize);
 Quill.register("modules/ImageExtend", ImageExtend);
@@ -182,6 +210,53 @@ export default {
   },
   data() {
     return {
+      videoDialogShow: false,
+      videoForm: {
+        src: "",
+        width: 400,
+        height: 300,
+        align: ""
+      },
+      cusorIndex: 0,
+      videoRules: {
+        src: [
+          {
+            required: true,
+            message: "请输入视频地址",
+            trigger: ["blur", "change"]
+          },
+          {
+            type: "string",
+            pattern: /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/,
+            message: "视频地址格式不正确",
+            trigger: ["blur", "change"]
+          }
+        ],
+        width: [
+          {
+            type: "integer",
+            range: {
+              min: 0
+            },
+            message: "请输入大于0的整数"
+          }
+        ],
+        height: [
+          {
+            type: "integer",
+            range: {
+              min: 0
+            },
+            message: "请输入大于0的整数"
+          }
+        ],
+        align: [
+          {
+            type: "enum",
+            enum: ["left", "center", "right"]
+          }
+        ]
+      },
       loading: false,
       artical: {
         id: "",
@@ -216,14 +291,6 @@ export default {
             },
             modules: ["Resize", "Toolbar", "DisplaySize"]
           },
-          // videoResize: {
-          //   displayStyles: {
-          //     backgroundColor: "black",
-          //     border: "none",
-          //     color: "white"
-          //   },
-          //   modules: ["Resize", "Toolbar", "DisplaySize"]
-          // },
           ImageExtend: {
             loading: false,
             name: "file",
@@ -282,28 +349,29 @@ export default {
   methods: {
     onEditorBlur(quill) {},
     onEditorFocus(quill) {
-      console.log(quill.getSelection());
+      // console.log(quill.getSelection());
     },
     onEditorReady(quill) {
       let toolbar = quill.getModule("toolbar");
       toolbar.addHandler("video", () => {
-        var pIndex = quill.getSelection().index;
-        MessageBox.prompt("请输入URL", "提示", {
-          closeOnClickModal: false,
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          inputPattern: /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/,
-          inputErrorMessage: "URL格式不正确"
-        })
-          .then(({ value }) => {
-            quill.insertEmbed(pIndex, "video", {src:value,width:800,height:500,align:'center'});
-            quill.update();
-            quill.setSelection(pIndex + 1);
-            
-          })
-          .catch(() => {
-            quill.format("video", false);
-          });
+        this.videoDialogShow = true;
+        this.$nextTick(() => {
+          this.$refs.videoForm.resetFields();
+        });
+
+        this.cusorIndex = quill.getSelection().index;
+      });
+    },
+    videoHandler() {
+      this.$refs.videoForm.validate(valid => {
+        if (!valid) {
+          return;
+        }
+        let quill = this.$refs[this.id].quill;
+        quill.insertEmbed(this.cusorIndex, "video", this.videoForm);
+        quill.update();
+        quill.setSelection(this.cusorIndex + 1);
+        this.videoDialogShow = false;
       });
     },
     undoClick() {
