@@ -13,13 +13,25 @@ import tinymce from 'tinymce/tinymce'
 import Editor from '@tinymce/tinymce-vue'
 import 'tinymce/themes/silver/theme'
 import 'tinymce/plugins/image'
+import 'tinymce/plugins/code'
+import 'tinymce/plugins/link'
+import 'tinymce/plugins/anchor'
 import 'tinymce/plugins/media'
 import 'tinymce/plugins/table'
 import 'tinymce/plugins/lists'
+import 'tinymce/plugins/advlist'
 import 'tinymce/plugins/contextmenu'
 import 'tinymce/plugins/wordcount'
 import 'tinymce/plugins/colorpicker'
 import 'tinymce/plugins/textcolor'
+import 'tinymce/plugins/fullscreen'
+import 'tinymce/plugins/preview'
+import 'tinymce/plugins/autosave'
+import 'tinymce/plugins/directionality'
+import 'tinymce/plugins/emoticons'
+import 'tinymce/plugins/hr'
+import 'tinymce/plugins/help'
+import 'tinymce/plugins/pagebreak'
 export default {
   components: {
     Editor
@@ -50,19 +62,21 @@ export default {
         language_url: '/static/tinymce/langs/zh_CN.js',
         language: 'zh_CN',
         skin_url: '/static/tinymce/skins/ui/oxide/',
-        // height: 300,
-        plugins: 'link lists image code table colorpicker textcolor wordcount contextmenu',
-        toolbar: 'bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | link unlink image code | removeformat',
+        emoticons_database_url:'/static/tinymce/js/emojis.min.js',
+        height: 400,
+        plugins: 'hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media',
+        toolbar: 'undo redo | bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent blockquote pagebreak hr|ltr rtl|numlist bullist| link unlink anchor code image media emoticons|  removeformat | table tabledelete  |tablemergecells tablesplitcells tableinsertrowbefore tableinsertrowafter tabledeleterow  tableinsertcolbefore tableinsertcolafter tabledeletecol| fullscreen preview |help',
+        advlist_bullet_styles:'default,circle,disc,square',
+        advlist_number_styles:'default,lower-alpha,lower-greek,lower-roman,upper-alpha,upper-roman',
         branding: false,
         menubar: false,
+        autosave_ask_before_unload:true,
+        media_live_embeds: true,
         //此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
         //如需ajax上传可参考https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_handler
-        images_upload_handler: (blobInfo, success, failure) => {
-          const img = 'data:image/jpeg;base64,' + blobInfo.base64()
-          success(img)
-        }
+        images_upload_base_path:'/vlog/image/upload'
       },
-      myValue: '请输入'
+      myValue: ''
     }
   },
   mounted() {
