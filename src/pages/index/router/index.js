@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import UserList from '@/components/user-list'
-import Editor from '@/components/editor'
 import NotFound from '@/components/404'
 import AdminHome from '@/components/admin-home'
 import Login from '@/components/login'
@@ -44,9 +43,6 @@ export default new Router({
       component: MenuList
     }, {
       path: '/editor',
-      component: Editor
-    }, {
-      path: '/tinymce',
       component: TinyMCE
     },{
       path: '/404',

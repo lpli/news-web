@@ -4,13 +4,9 @@ import App from './App.vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import http from '../../util/http';
-import Vtip from 'vtip'
-import 'vtip/lib/index.min.css'
 import fullscreen from 'vue-fullscreen'
-// 注册指令使用
-Vue.use(Vtip.directive)
+import "babel-polyfill";
 Vue.use(fullscreen)
-Vue.prototype.$tip = Vtip.tip;
 // require('../../util/mock');
 import "@/assets/icon/iconfont.css";
 Vue.use(ElementUI);

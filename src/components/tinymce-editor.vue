@@ -1,6 +1,6 @@
 <template>
   <div class="tinymce-editor">
-    <editor v-model="myValue" :init="init" :disabled="disabled" @onClick="onClick"></editor>
+    <editor v-model="myValue" :init="init" :disabled="disabled" @onClick="onClick" ></editor>
   </div>
 </template>
 
@@ -44,12 +44,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: "lists image media table textcolor wordcount contextmenu"
+      default: "hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media"
     },
     toolbar: {
       type: [String, Array],
-      default:
-        "undo redo |  formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat"
+      default:"undo redo | bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent blockquote pagebreak hr|ltr rtl|numlist bullist| link unlink anchor code image media emoticons|  removeformat | table | fullscreen preview |help"
     }
   },
   data() {
@@ -61,10 +60,8 @@ export default {
         skin_url: "/static/tinymce/skins/ui/oxide/",
         emoticons_database_url: "/static/tinymce/js/emojis.min.js",
         height: 400,
-        plugins:
-          "hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media",
-        toolbar:
-          "undo redo | bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent blockquote pagebreak hr|ltr rtl|numlist bullist| link unlink anchor code image media emoticons|  removeformat | table tabledelete  |tablemergecells tablesplitcells tableinsertrowbefore tableinsertrowafter tabledeleterow  tableinsertcolbefore tableinsertcolafter tabledeletecol| fullscreen preview |help",
+        plugins: this.plugins,
+        toolbar: this.toolbar,
         advlist_bullet_styles: "default,circle,disc,square",
         advlist_number_styles:
           "default,lower-alpha,lower-greek,lower-roman,upper-alpha,upper-roman",
@@ -133,4 +130,7 @@ export default {
 };
 </script>
 <style scoped>
+.tinymce-editor{
+  width: 100%;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <el-container :class="isCollapse?'collaspe':''">
+  <el-container :class="isCollapse?'collaspe':''  ">
     <el-aside>
       <sider-menu :menuList="menuList" :collapse="isCollapse"></sider-menu>
     </el-aside>
