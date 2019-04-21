@@ -12,6 +12,8 @@ import GroupList from '@/components/group-list'
 import RoleList from '@/components/role-list'
 import OpsList from '@/components/operation-list'
 import TinyMCE from '@/components/tinymce-editor'
+import Article from '@/components/article'
+import ArticleList from '@/components/article-list'
 Vue.use(Router)
 
 export default new Router({
@@ -44,6 +46,12 @@ export default new Router({
     }, {
       path: '/editor',
       component: TinyMCE
+    },{
+      path: '/article/publish',
+      component: Article
+    },{
+      path: '/article/my',
+      component: ArticleList
     },{
       path: '/404',
       component: NotFound

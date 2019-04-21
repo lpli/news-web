@@ -61,7 +61,7 @@
   -webkit-transition: width 0.4s;
   transition-timing-function: ease;
   -webkit-transition-timing-function: ease;
-  width: 200px !important;
+  width: 210px !important;
   .sidebar-container {
     .sidebar-title {
       .sidebar-title-text {
@@ -126,7 +126,6 @@ html {
   height: 40px;
   line-height: 40px;
   .custom-tree-node {
-    width: 100%;
     padding-left: 10px;
     .tree-node-ops {
       padding-left: 100px;
@@ -150,11 +149,10 @@ html {
 .sidebar-container {
   height: 100%;
   .sider-scrollbar {
-    width: 100%;
     height: 100%;
     .sidebar-title {
-      background: @hbgcolor;
-      color: @tcolor;
+      background: @tcolor;
+      color: @hbgcolor;
       height: 60px;
       line-height: 60px;
       text-align: center;

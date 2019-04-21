@@ -32,8 +32,7 @@ MyPlugin.install = function (Vue, options) {
     } else if (code === 403) {
       Message.error({
         showClose: true,
-        message: error.response.data.msg,
-        type: 'error'
+        message: '抱歉，你无此权限。请联系管理员。'
       });
     }
     return Promise.reject(error);
@@ -41,14 +40,14 @@ MyPlugin.install = function (Vue, options) {
   })
 
   Vue.prototype.$http = {
-    post: function (url, params) {
+    post: function (url, params,config) {
       return new Promise((resolve, reject) => {
-        axios.post(url, params)
+        axios.post(url, params,config)
           .then(response => {
             resolve(response.data);
           })
           .catch((error) => {
-            //reject(error);
+            reject(error);
           })
       })
     },
@@ -59,7 +58,7 @@ MyPlugin.install = function (Vue, options) {
             resolve(response.data);
           })
           .catch((error) => {
-            //reject(error);
+            reject(error);
           })
       })
     },
@@ -72,7 +71,7 @@ MyPlugin.install = function (Vue, options) {
             resolve(response.data);
           })
           .catch((error) => {
-            //reject(error);
+            reject(error);
           })
       })
     },
@@ -85,7 +84,7 @@ MyPlugin.install = function (Vue, options) {
             resolve(response.data);
           })
           .catch((error) => {
-            //reject(error);
+            reject(error);
           })
       })
     }

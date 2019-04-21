@@ -170,16 +170,29 @@ export default {
         if (!valid) {
           return;
         }
-        this.$http.post("/group/create", this.groupForm).then(json => {
-          if (json.code) {
-            this.$message({
-              message: "创建成功",
-              type: "success"
-            });
-            this.getData();
-            this.showDialog = false;
-          }
-        });
+        if (this.groupForm.id) {
+          this.$http.put("/group/update", this.groupForm).then(json => {
+            if (json.code) {
+              this.$message({
+                message: "编辑成功",
+                type: "success"
+              });
+              this.getData();
+              this.showDialog = false;
+            }
+          });
+        }else{
+          this.$http.post("/group/create", this.groupForm).then(json => {
+            if (json.code) {
+              this.$message({
+                message: "创建成功",
+                type: "success"
+              });
+              this.getData();
+              this.showDialog = false;
+            }
+          });
+        }
       });
     },
     getData() {

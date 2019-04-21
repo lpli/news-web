@@ -1,6 +1,6 @@
 <template>
   <div class="tinymce-editor">
-    <editor v-model="myValue" :init="init" :disabled="disabled" @onClick="onClick" ></editor>
+    <editor v-model="myValue" :init="init" :disabled="disabled" @onClick="onClick"  @onChange="onChange" :height="height" ref="mce"></editor>
   </div>
 </template>
 
@@ -42,13 +42,19 @@ export default {
       type: Boolean,
       default: false
     },
+    height:{
+      type:Number,
+      default:400
+    },
     plugins: {
       type: [String, Array],
-      default: "hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media"
+      default:
+        "hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media"
     },
     toolbar: {
       type: [String, Array],
-      default:"undo redo | bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent blockquote pagebreak hr|ltr rtl|numlist bullist| link unlink anchor code image media emoticons|  removeformat | table | fullscreen preview |help"
+      default:
+        "undo redo | bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent blockquote pagebreak hr|ltr rtl|numlist bullist| link unlink anchor code image media emoticons|  removeformat | table | fullscreen preview |help"
     }
   },
   data() {
@@ -59,7 +65,7 @@ export default {
         language: "zh_CN",
         skin_url: "/static/tinymce/skins/ui/oxide/",
         emoticons_database_url: "/static/tinymce/js/emojis.min.js",
-        height: 400,
+        height: this.height,
         plugins: this.plugins,
         toolbar: this.toolbar,
         advlist_bullet_styles: "default,circle,disc,square",
@@ -71,36 +77,7 @@ export default {
         media_live_embeds: true,
         //此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
         //如需ajax上传可参考https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_handler
-        images_upload_handler: function(blobInfo, success, failure) {
-          var xhr, formData;
-
-          xhr = new XMLHttpRequest();
-          xhr.withCredentials = false;
-          xhr.open("POST", "/vlog/image/upload");
-
-          xhr.onload = function() {
-            var json;
-
-            if (xhr.status != 200) {
-              failure("HTTP Error: " + xhr.status);
-              return;
-            }
-
-            json = JSON.parse(xhr.responseText);
-
-            if (!json || typeof json.data != "string") {
-              failure("Invalid JSON: " + xhr.responseText);
-              return;
-            }
-
-            success(json.data);
-          };
-
-          formData = new FormData();
-          formData.append("file", blobInfo.blob(), blobInfo.filename());
-
-          xhr.send(formData);
-        }
+        images_upload_handler: this.uploadImg
       },
       myValue: ""
     };
@@ -114,9 +91,25 @@ export default {
     onClick(e) {
       this.$emit("onClick", e, tinymce);
     },
+    onChange(e){
+      this.$emit("change", e, tinymce);
+    },
     //可以添加一些自己的自定义事件，如清空内容
     clear() {
       this.myValue = "";
+    },
+    uploadImg(blobInfo, success, failure) {
+      var formData = new FormData();
+      formData.append("file", blobInfo.blob(), blobInfo.filename());
+
+      this.$http
+        .post("/image/upload", formData, {})
+        .then((json) => {
+          success(json.data);
+        })
+        .catch(() => {
+          failure("上传失败");
+        });
     }
   },
   watch: {
@@ -130,7 +123,7 @@ export default {
 };
 </script>
 <style scoped>
-.tinymce-editor{
+.tinymce-editor {
   width: 100%;
 }
 </style>
