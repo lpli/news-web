@@ -14,6 +14,7 @@ import OpsList from '@/components/operation-list'
 import TinyMCE from '@/components/tinymce-editor'
 import Article from '@/components/article'
 import ArticleList from '@/components/article-list'
+import ArticleView from '@/components/article-view'
 Vue.use(Router)
 
 export default new Router({
@@ -49,6 +50,9 @@ export default new Router({
     },{
       path: '/article/publish',
       component: Article
+    },{
+      path: '/article/view/:id',
+      component: ArticleView
     },{
       path: '/article/my',
       component: ArticleList

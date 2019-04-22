@@ -1,6 +1,9 @@
 <template>
   <div class="editor">
     <el-form :model="article" label-width="100px" :rules="rules" ref="articleForm">
+      <el-form-item prop="id" v-show="false">
+        <el-input type="hidden" v-model="article.id"></el-input>
+      </el-form-item>
       <el-form-item prop="title" label="标题">
         <el-input type="text" v-model="article.title" placeholder="请输入标题（6~30个字）"></el-input>
       </el-form-item>
@@ -14,13 +17,11 @@
         </el-radio-group>
         <div class="img-preview">
           <ul v-if="coverList.length > 0">
-            <li v-for="(img,i) in coverList" :key="i">
-              <img :src="img">
+            <li v-for="img in coverList" :key="img.imgUrl">
+              <img :src="img.imgUrl">
             </li>
           </ul>
-          <div v-else class="no-cover">
-              无可用配图将发布无封面文章
-          </div>
+          <div v-else class="no-cover">无可用配图将发布无封面文章</div>
         </div>
       </el-form-item>
     </el-form>
@@ -49,13 +50,13 @@
       }
     }
   }
-  .no-cover{
-    border:1px dotted #999;
-    width:100px;
-    height:80px;
-    padding:10px 15px;
+  .no-cover {
+    border: 1px dotted #999;
+    width: 150px;
+    height: 45px;
+    padding: 10px 15px;
     text-align: center;
-    color:#999;
+    color: #999;
     line-height: 22px;
   }
 }
@@ -75,7 +76,8 @@ export default {
         id: "",
         title: "",
         content: "",
-        coverType: 1
+        coverType: 1,
+        coverList: []
       },
       coverList: [],
       id: "editor",
@@ -94,32 +96,46 @@ export default {
             message: "请输入内容"
           }
         ],
-        coverType:[{
-          required: true,
+        coverType: [
+          {
+            required: true,
             trigger: ["blur", "change"],
             message: "请选择"
-        }]
+          }
+        ]
       }
     };
   },
   methods: {
     draft() {
-      this.$refs.articleForm.validate((valid)=>{
-        if(!valid){
+      this.$refs.articleForm.validate(valid => {
+        if (!valid) {
           return;
         }
-        this.$http.post('/article/draft',this.article).then((json)=>{
-            if(json.code==1){
-              this.$router.push({
-                path:'/article/my'
-              })
-            }
+        this.article.coverList = this.coverList;
+        this.$http.post("/article/draft", this.article).then(json => {
+          if (json.code == 1) {
+            this.$router.push({
+              path: "/article/my"
+            });
+          }
         });
-
-      })
+      });
     },
-    publish(){
-
+    publish() {
+      this.$refs.articleForm.validate(valid => {
+        if (!valid) {
+          return;
+        }
+        this.article.coverList = this.coverList;
+        this.$http.post("/article/publish", this.article).then(json => {
+          if (json.code == 1) {
+            this.$router.push({
+              path: "/article/my"
+            });
+          }
+        });
+      });
     },
     getCover() {
       let list = [];
@@ -129,10 +145,10 @@ export default {
         return;
       }
       if (this.article.coverType === 1) {
-        list.push(imgs[0].src);
+        list.push({ imgUrl: imgs[0].src, articleId: this.articleId });
       } else {
         imgs.each((i, item) => {
-          list.push(item.src);
+          list.push({ imgUrl: item.src, articleId: this.articleId });
         });
       }
       if (list.length > 2) {

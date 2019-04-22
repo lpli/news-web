@@ -2,11 +2,9 @@
   <div class="article-list">
     <ul v-if="list.length>0">
       <li v-for="item in list" :key="item.id">
-        <router-link :to="'/article/'+item.id" class="article-link">
-          <div class="cover">
-            <img
-              src="http://localhost:9000/img/2019/04/21/067e1cd7-80b4-4e8b-a4e3-0ac08cbd4852.png"
-            >
+        <router-link :to="'/article/view/'+item.id" class="article-link">
+          <div class="cover" v-if="item.coverList != null && item.coverList.length > 0">
+            <img v-for="cover in item.coverList" :key="cover.imgUrl" :src="cover.imgUrl">
           </div>
           <div class="article-item">
             <div class="article-title">{{item.title}}</div>
@@ -23,7 +21,7 @@
         </router-link>
       </li>
     </ul>
-    <el-pagination background layout="prev, pager, next" :total="total" :page-size="pageSize"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :total="total" :page-size="pageSize" @current-change="changePage"></el-pagination>
   </div>
 </template>
 <style lang="less" scoped>
@@ -46,10 +44,13 @@
       }
       .cover {
         float: left;
-        width: @coverW;
+        img {
+          width: @coverW;
+          height: @coverW*3 / 4;
+          padding-right:15px;
+        }
       }
       .article-item {
-        width: calc(100% - @coverW - 30px);
         float: left;
         .article-title {
           font-size: 22px;
@@ -57,10 +58,14 @@
           margin-bottom: 5px;
         }
         .article-time {
-          color:#999;
+          color: #999;
+          font-size:12px;
           p span:nth-child(2) {
             padding-left: 10px;
           }
+        }
+        .article-author{
+          font-size:15px;
         }
       }
     }
@@ -95,6 +100,10 @@ export default {
             this.list = json.data.records;
           }
         });
+    },
+    changePage(pageNo){
+      this.pageNo = pageNo;
+      this.loadData();
     }
   }
 };
