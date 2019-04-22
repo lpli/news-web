@@ -116,7 +116,7 @@ export default {
         this.$http.post("/article/draft", this.article).then(json => {
           if (json.code == 1) {
             this.$router.push({
-              path: "/article/my"
+              path: "/article/myList"
             });
           }
         });
@@ -131,7 +131,7 @@ export default {
         this.$http.post("/article/publish", this.article).then(json => {
           if (json.code == 1) {
             this.$router.push({
-              path: "/article/my"
+              path: "/article/myList"
             });
           }
         });

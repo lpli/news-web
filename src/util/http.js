@@ -105,6 +105,13 @@ MyPlugin.install = function (Vue, options) {
     }
   }
 
+  Vue.prototype.$util = {
+    toHtml(str){
+      str = str.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#39;/g,"'");
+      return str;
+    }
+  }
+
 
 
 }

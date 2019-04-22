@@ -54,8 +54,13 @@ export default new Router({
       path: '/article/view/:id',
       component: ArticleView
     },{
-      path: '/article/my',
-      component: ArticleList
+      path: '/article/myList',
+      component: ArticleList,
+      name:'myArticle'
+    },{
+      path: '/article/approveList',
+      component: ArticleList,
+      name:'approve'
     },{
       path: '/404',
       component: NotFound
