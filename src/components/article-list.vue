@@ -17,10 +17,20 @@
               <span>作者：{{item.authorId}}</span>
               <el-tag type="info" v-if="item.status == 0" size="small">草稿</el-tag>
               <el-tag type="warning" v-else-if="item.status == 1" size="small">审核中</el-tag>
-              <el-tag type="success" v-else size="small">已发布</el-tag>
+              <el-tag type="success" v-else-if="item.status == 2" size="small">已发布</el-tag>
+              <el-tag type="error" v-else size="small">审核未通过</el-tag>
             </div>
           </div>
         </router-link>
+        <div class="op-btn">
+          <el-button v-if="item.status == 0" size="small" @click="toApprove(item)">提交审核</el-button>
+          <el-button v-if="item.status == 3 || item.status == 0" size="small" @click="edit(item)">修改</el-button>
+          <el-button
+            v-if="item.status == 1 && $route.name != 'myArticle'"
+            size="small"
+            @click="approve(item)"
+          >审核</el-button>
+        </div>
       </li>
     </ul>
     <div v-else class="no-records">
@@ -51,9 +61,16 @@
       width: 100%;
       box-sizing: border-box;
       box-shadow: 0px 1px #e4e4e4;
+      position: relative;
       .article-link {
         color: #000;
       }
+      .op-btn {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+      }
+
       .cover {
         float: left;
         img {
@@ -65,7 +82,7 @@
           -webkit-transition: all 0.4s;
           -o-transition: all 0.4s;
         }
-        img:hover{
+        img:hover {
           transform: scale(1.1);
         }
       }
@@ -91,14 +108,15 @@
         }
       }
     }
-      
   }
   .no-records {
     text-align: center;
     background-color: #f5f7fa;
     padding: 15px 0;
+    height: 220px;
     i {
-      font-size: 80px;
+      margin-top: 30px;
+      font-size: 100px;
       color: #ccc;
     }
     i::after {
@@ -112,8 +130,10 @@
 </style>
 
 <script>
+import ArticleView from "@/components/article-view";
 export default {
   name: "ArticleList",
+  components: { ArticleView },
   data() {
     return {
       list: [],
@@ -151,6 +171,34 @@ export default {
     changePage(pageNo) {
       this.pageNo = pageNo;
       this.loadData(this.$route.name);
+    },
+    toApprove(article) {
+      this.$confirm("确认提交审核稿件《" + article.title + "》？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http.post("/article/publish", article).then(json => {
+          if (json.code == 1) {
+            this.loadData(this.$route.name);
+          } else {
+            this.$message({
+              type: "error",
+              message: json.msg
+            });
+          }
+        });
+      });
+    },
+    edit(article) {
+      this.$router.push({
+        path: "/article/edit/" + article.id
+      });
+    },
+    approve(article) {
+       this.$router.push({
+        path: "/article/approve/"+article.id
+      });
     }
   },
   watch: {

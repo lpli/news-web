@@ -15,6 +15,7 @@ import TinyMCE from '@/components/tinymce-editor'
 import Article from '@/components/article'
 import ArticleList from '@/components/article-list'
 import ArticleView from '@/components/article-view'
+import ArticleApprove from '@/components/article-approve'
 Vue.use(Router)
 
 export default new Router({
@@ -55,6 +56,10 @@ export default new Router({
       component: ArticleView,
       name:'viewArticle'
     },,{
+      path: '/article/approve/:id',
+      component: ArticleApprove,
+      name:'approveArticle'
+    },{
       path: '/article/edit/:id',
       component: Article,
       name:'editArticle'

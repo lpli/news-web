@@ -4,6 +4,9 @@
       <el-form-item prop="id" v-show="false">
         <el-input type="hidden" v-model="article.id"></el-input>
       </el-form-item>
+      <el-form-item prop="status" v-show="false">
+        <el-input type="hidden" v-model="article.status"></el-input>
+      </el-form-item>
       <el-form-item prop="title" label="标题">
         <el-input type="text" v-model="article.title" placeholder="请输入标题（6~30个字）"></el-input>
       </el-form-item>
@@ -27,7 +30,7 @@
     </el-form>
     <div class="btn-bar">
       <el-button type="infor" @click="draft">保存草稿</el-button>
-      <el-button type="infor" @click="publish">发布</el-button>
+      <el-button type="infor" @click="publish">提交审核</el-button>
     </div>
   </div>
 </template>
@@ -75,6 +78,7 @@ export default {
       article: {
         id: "",
         title: "",
+        status: 0,
         content: "",
         coverType: 1,
         coverList: []
@@ -111,6 +115,8 @@ export default {
       this.$http.get("/article/" + id).then(json => {
         if (json.code == 1) {
           this.article = json.data;
+          this.article.content = this.$util.toHtml(this.article.content);
+          this.coverList = this.article.coverList;
         }
       });
     },
@@ -135,7 +141,7 @@ export default {
           return;
         }
         this.article.coverList = this.coverList;
-        this.$http.post("/article/publish", this.article).then(json => {
+        this.$http.post("/article/toApprove", this.article).then(json => {
           if (json.code == 1) {
             this.$router.push({
               path: "/article/myList"

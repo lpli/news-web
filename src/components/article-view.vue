@@ -30,7 +30,7 @@ export default {
     };
   },
   mounted() {
-    this.getArticle();
+    this.getArticle(this.$route.params.id);
   },
   computed:{
     content(){
@@ -38,12 +38,15 @@ export default {
     }
   },
   methods: {
-    getArticle() {
-      this.$http.get("/article/" + this.$route.params.id).then(json => {
+    getArticle(id) {
+      this.$http.get("/article/" + id).then(json => {
         if (json.code == 1) {
           this.article = json.data;
         }
       });
+    },
+    loadArticle(article){
+      this.article = article;
     }
   }
 };
