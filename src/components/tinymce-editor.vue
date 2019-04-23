@@ -43,7 +43,7 @@ export default {
       default: false
     },
     height:{
-      type:Number,
+      type:[Number,String],
       default:400
     },
     plugins: {

@@ -8,7 +8,7 @@
         <el-input type="text" v-model="article.title" placeholder="请输入标题（6~30个字）"></el-input>
       </el-form-item>
       <el-form-item prop="content">
-        <editor v-model="article.content" ref="editor" @change="getCover"></editor>
+        <editor v-model="article.content" ref="editor" @change="getCover" :height="300"></editor>
       </el-form-item>
       <el-form-item prop="coverType" label="封面图">
         <el-radio-group v-model.number="article.coverType" @change="getCover">
@@ -107,6 +107,13 @@ export default {
     };
   },
   methods: {
+    loadData(id) {
+      this.$http.get("/article/" + id).then(json => {
+        if (json.code == 1) {
+          this.article = json.data;
+        }
+      });
+    },
     draft() {
       this.$refs.articleForm.validate(valid => {
         if (!valid) {
@@ -160,6 +167,17 @@ export default {
   },
 
   computed: {},
-  mounted() {}
+  mounted() {
+    if (this.$route.name == "editArticle") {
+      this.loadData(this.$route.params.id);
+    }
+  },
+  watch: {
+    $route(to, from) {
+      if (to.name == "editArticle") {
+        this.loadData(to.params.id);
+      }
+    }
+  }
 };
 </script>

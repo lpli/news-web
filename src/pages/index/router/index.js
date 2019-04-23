@@ -52,7 +52,12 @@ export default new Router({
       component: Article
     },{
       path: '/article/view/:id',
-      component: ArticleView
+      component: ArticleView,
+      name:'viewArticle'
+    },,{
+      path: '/article/edit/:id',
+      component: Article,
+      name:'editArticle'
     },{
       path: '/article/myList',
       component: ArticleList,

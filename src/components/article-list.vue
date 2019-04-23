@@ -150,7 +150,7 @@ export default {
     },
     changePage(pageNo) {
       this.pageNo = pageNo;
-      this.loadData();
+      this.loadData(this.$route.name);
     }
   },
   watch: {
