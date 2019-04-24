@@ -178,7 +178,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.post("/article/publish", article).then(json => {
+        this.$http.post("/article/toApprove", article).then(json => {
           if (json.code == 1) {
             this.loadData(this.$route.name);
           } else {
@@ -199,6 +199,9 @@ export default {
        this.$router.push({
         path: "/article/approve/"+article.id
       });
+    },
+    showLog(article){
+
     }
   },
   watch: {
