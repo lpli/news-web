@@ -28,6 +28,7 @@ import "tinymce/plugins/emoticons";
 import "tinymce/plugins/hr";
 import "tinymce/plugins/help";
 import "tinymce/plugins/pagebreak";
+import "tinymce/plugins/autoresize";
 export default {
   components: {
     Editor
@@ -49,12 +50,16 @@ export default {
     plugins: {
       type: [String, Array],
       default:
-        "hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media"
+        " autoresize hr anchor pagebreak preview emoticons help directionality autosave link lists advlist image code table colorpicker textcolor wordcount contextmenu fullscreen media "
     },
     toolbar: {
       type: [String, Array],
       default:
-        "undo redo | bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent blockquote pagebreak hr|ltr rtl|numlist bullist| link unlink anchor code image media emoticons|  removeformat | table | fullscreen preview |help"
+        "undo redo | bold italic underline strikethrough | fontsizeselect | forecolor  | alignleft aligncenter alignright alignjustify |  blockquote|numlist bullist| link  image media |  removeformat | fullscreen preview |help"
+    },
+    contextmenu:{
+       type: [String, Array],
+      default:"undo redo | cut copy paste pastetext | selectall"
     }
   },
   data() {
@@ -65,9 +70,10 @@ export default {
         language: "zh_CN",
         skin_url: "/static/tinymce/skins/ui/oxide/",
         emoticons_database_url: "/static/tinymce/js/emojis.min.js",
-        height: this.height,
+        min_height: this.height,
         plugins: this.plugins,
         toolbar: this.toolbar,
+        contextmenu:this.contextmenu,
         advlist_bullet_styles: "default,circle,disc,square",
         advlist_number_styles:
           "default,lower-alpha,lower-greek,lower-roman,upper-alpha,upper-roman",
