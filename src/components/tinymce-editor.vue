@@ -128,8 +128,10 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style lang="less" scoped>
 .tinymce-editor {
   width: 100%;
 }
+
 </style>
+
