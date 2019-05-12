@@ -1,11 +1,15 @@
 <template>
   <div class="article-list">
+    <div class="filter" v-if="name == 'myArticle'">
+      <span class="item">全部</span>
+      <span class="item">草稿</span>
+      <span class="item">审核中</span>
+      <span class="item">已发布</span>
+      <span class="item">审核未通过</span>
+    </div>
     <ul v-if="list.length>0">
       <li v-for="item in list" :key="item.id">
         <router-link :to="'/article/view/'+item.id" class="article-link">
-          <div class="cover" v-if="item.coverList != null && item.coverList.length > 0">
-            <img v-for="cover in item.coverList" :key="cover.imgUrl" :src="cover.imgUrl">
-          </div>
           <div class="article-item">
             <div class="article-title">{{item.title}}</div>
             <div class="article-time">
@@ -15,19 +19,33 @@
             </div>
             <div class="article-author">
               <span>作者：{{item.authorId}}</span>
-              <el-tag type="info" v-if="item.status == 0" size="small">草稿</el-tag>
-              <el-tag type="warning" v-else-if="item.status == 1" size="small">审核中</el-tag>
-              <el-tag type="success" v-else-if="item.status == 2" size="small">已发布</el-tag>
-              <el-tag type="error" v-else size="small">审核未通过</el-tag>
+              <el-tag type="info" v-if="item.status == 0" size="mini">草稿</el-tag>
+              <el-tag type="warning" v-else-if="item.status == 1" size="mini">审核中</el-tag>
+              <el-tag type="success" v-else-if="item.status == 2" size="mini">已发布</el-tag>
+              <el-tag type="danger" v-else size="mini" @click="showComment($event,item)">
+                审核未通过
+                <i class="el-icon-third-question-circle-fill"></i>
+              </el-tag>
             </div>
+          </div>
+          <div class="cover" v-if="item.coverList != null && item.coverList.length > 0">
+            <img v-for="cover in item.coverList" :key="cover.imgUrl" :src="cover.imgUrl">
           </div>
         </router-link>
         <div class="op-btn">
-          <el-button v-if="item.status == 0" size="small" @click="toApprove(item)">提交审核</el-button>
-          <el-button v-if="item.status == 3 || item.status == 0" size="small" @click="edit(item)">修改</el-button>
+          <el-button type="text" v-if="item.status == 0" size="mini" @click="toApprove(item)">提交审核</el-button>
+          <el-button type="text" v-if="item.status == 2" size="mini" @click="revert(item)">撤回</el-button>
+          <el-button type="text" size="mini" @click="del(item)">删除</el-button>
           <el-button
+            type="text"
+            v-if="item.status == 3 || item.status == 0"
+            size="mini"
+            @click="edit(item)"
+          >修改</el-button>
+          <el-button
+            type="text"
             v-if="item.status == 1 && $route.name != 'myArticle'"
-            size="small"
+            size="mini"
             @click="approve(item)"
           >审核</el-button>
         </div>
@@ -49,6 +67,18 @@
 <style lang="less" scoped>
 @coverW: 160px;
 .article-list {
+  .filter {
+    padding: 10px 10px;
+    background: #f4f4f5;
+    .item {
+      padding: 5px 10px;
+      display: inline-block;
+      &:nth-child(even) {
+        border-right: 1px solid #e4e7ed;
+        border-left: 1px solid #e4e7ed;
+      }
+    }
+  }
   ul {
     padding: 5px 10px;
     list-style: none;
@@ -67,12 +97,12 @@
       }
       .op-btn {
         position: absolute;
-        right: 10px;
+        left: 12px;
         bottom: 10px;
       }
 
       .cover {
-        float: left;
+        float: right;
         img {
           width: @coverW;
           height: @coverW*3 / 4;
@@ -139,17 +169,16 @@ export default {
       list: [],
       pageNo: 1,
       pageSize: 10,
-      total: 0
+      total: 0,
+      name: ""
     };
-  },
-  props: {
-    name: String
   },
   mounted() {
     this.loadData(this.$route.name);
   },
   methods: {
     loadData(name) {
+      this.name = name;
       let url = "";
       if (name == "myArticle") {
         url = "/article/myList";
@@ -173,7 +202,7 @@ export default {
       this.loadData(this.$route.name);
     },
     toApprove(article) {
-      this.$confirm("确认提交审核稿件《" + article.title + "》？", "提示", {
+      this.$confirm("确认提交审核《" + article.title + "》？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -196,12 +225,66 @@ export default {
       });
     },
     approve(article) {
-       this.$router.push({
-        path: "/article/approve/"+article.id
+      this.$router.push({
+        path: "/article/approve/" + article.id
       });
     },
-    showLog(article){
-
+    showComment(event, article) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.$http.get("/article/" + article.id + "/comment").then(json => {
+        if (json.code === 1) {
+          this.$alert(
+            "《" +
+              json.data.articleTitle +
+              "》审核未通过，<strong>【" +
+              json.data.operator +
+              '】</strong>：<span style="color:#fe6c6f">' +
+              json.data.comment +
+              "</span>",
+            "审核意见",
+            {
+              dangerouslyUseHTMLString: true
+            }
+          );
+        }
+      });
+    },
+    revert(article) {
+      this.$confirm("确认撤回《" + article.title + "》？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http.get("/article/" + article.id + "/revert").then(json => {
+          if (json.code == 1) {
+            this.loadData(this.$route.name);
+          } else {
+            this.$message({
+              type: "error",
+              message: json.msg
+            });
+          }
+        });
+      });
+    },
+    del(article) {
+      this.$confirm("确认删除《" + article.title + "》？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http.delete("/article/" + article.id).then(json => {
+          if (json.code == 1) {
+            this.loadData(this.$route.name);
+          } else {
+            this.$message({
+              type: "error",
+              message: json.msg
+            });
+          }
+        });
+      });
     }
   },
   watch: {

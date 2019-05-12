@@ -34,7 +34,15 @@ MyPlugin.install = function (Vue, options) {
         showClose: true,
         message: '抱歉，你无此权限。请联系管理员。'
       });
+    }else{
+      Message.error({
+        showClose: true,
+        message: '服务异常',
+        type: 'error'
+      })
     }
+
+
     return Promise.reject(error);
 
   })

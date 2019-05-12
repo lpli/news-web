@@ -9,6 +9,7 @@ import "babel-polyfill";
 Vue.use(fullscreen)
 // require('../../util/mock');
 import "@/assets/icon/iconfont.css";
+import "@/assets/style/custom.less";
 Vue.use(ElementUI);
 Vue.use(http);
 router.beforeEach((to,from,next)=>{

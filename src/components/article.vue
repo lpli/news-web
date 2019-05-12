@@ -7,8 +7,12 @@
       <el-form-item prop="status" v-show="false">
         <el-input type="hidden" v-model="article.status"></el-input>
       </el-form-item>
-      <el-form-item prop="title" label="标题">
-        <el-input type="text" v-model="article.title" placeholder="请输入标题（6~30个字）"></el-input>
+      <el-form-item prop="title" label="标题" class="article-title">
+        <el-input type="text"  v-model="article.title" placeholder="请输入标题（最多30个字）" :maxlength="30" >
+          <span slot="append">
+            {{article.title.length}}/30
+          </span>
+        </el-input>
       </el-form-item>
       <el-form-item prop="content">
         <editor v-model="article.content" ref="editor" @change="getCover" :height="300"></editor>
@@ -30,14 +34,19 @@
     </el-form>
     <div class="btn-bar">
       <el-button type="infor" @click="draft">保存草稿</el-button>
-      <el-button type="infor" @click="publish">提交审核</el-button>
+      <el-button type="primary" @click="publish">提交审核</el-button>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
-.btn-bar {
-  padding-left: 100px;
+.editor{
+  width:80%;
+  .btn-bar{
+    position: fixed;
+    top: 80px;
+    right:10px;
+  }
 }
 
 .img-preview {
@@ -75,6 +84,7 @@ export default {
   data() {
     return {
       loading: false,
+      titleLength:0,
       article: {
         id: "",
         title: "",
@@ -170,6 +180,7 @@ export default {
         this.coverList = list;
       }
     }
+   
   },
 
   computed: {},

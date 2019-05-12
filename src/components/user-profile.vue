@@ -10,8 +10,8 @@
       <li class="user-seprator"></li>
       <li class="user-li" @click="logout">退出</li>
     </ul>
-    <div class="img-wrapper" slot="reference">
-      <img :src="imgSrc">
+    <div class="icon-wrapper" slot="reference">
+      <i class="el-icon-third-user"></i>
     </div>
   </el-popover>
 </template>
@@ -22,7 +22,7 @@
 }
 </style>
 
-<style scoped>
+<style scoped l>
 .user-profile {
   display: inline-block;
   padding: 5px 10px;
@@ -30,7 +30,7 @@
   float: right;
 }
 
-.img-wrapper {
+.icon-wrapper {
   height: 50px;
   width: 50px;
   border: 1px solid transparent;
@@ -38,9 +38,8 @@
   overflow: hidden;
 }
 
-.user-profile img {
-  height: 50px;
-  width: 50px;
+.icon-wrapper i {
+  font-size: 30px;
 }
 
 .user-ul {
@@ -66,7 +65,6 @@
 </style>
 
 <script>
-import img from "@/assets/logo.png";
 export default {
   name: "user-profile",
   data() {
@@ -75,10 +73,6 @@ export default {
     };
   },
   props: {
-    imgSrc: {
-      type: String,
-      default: img
-    }
   },
   mounted(){
     this.userName = this.$storage.getObj("userInfo").userName;

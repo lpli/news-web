@@ -13,8 +13,8 @@
         maxlength="800"
       ></el-input>
       <div slot="footer">
-        <el-button type="success" size="small" @click="pass">通过</el-button>
-        <el-button type="danger" size="small" @click="reject">打回修改</el-button>
+        <el-button type="success" size="mini" @click="pass">通过</el-button>
+        <el-button type="danger" size="mini" @click="reject">打回修改</el-button>
       </div>
     </el-dialog>
   </div>
