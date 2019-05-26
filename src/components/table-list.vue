@@ -28,7 +28,7 @@
       </el-table-column>
       <slot name="append"/>
     </el-table>
-    <div class="table-list-pg">
+    <div class="table-list-pg" v-if="showPage">
       <el-pagination
         layout="sizes,prev, pager, next, jumper, total"
         :current-page="pageNo"
@@ -69,6 +69,10 @@ export default {
       type: String,
       default: ""
     },
+    showPage: {
+      type: Boolean,
+      default: true
+    },
     method: {
       type: String,
       default: "get"
@@ -106,33 +110,40 @@ export default {
   computed: {
     visibleColumns: function() {
       return this.columns.filter(val => {
-        return typeof(val.hidden)!='undefined' ? !val.hidden : true;
+        return typeof val.hidden != "undefined" ? !val.hidden : true;
       });
     }
   },
   methods: {
     getData() {
-      this.param["pageNo"] = this.pageNo;
-      this.param["pageSize"] = this.pageSize;
+      if (this.showPage) {
+        this.param["pageNo"] = this.pageNo;
+        this.param["pageSize"] = this.pageSize;
+      }
       this.loading = true;
       this.$http[this.method](this.url, this.param)
         .then(json => {
           this.loading = false;
           if (json.code == "1") {
-            this.total = json.data.total;
-            this.rows = json.data.records;
+            if (this.showPage) {
+              this.total = json.data.total;
+              this.rows = json.data.records;
+            }else{
+              this.rows = json.data;
+            }
           } else {
             this.$message.warning({
               message: "数据加载异常"
             });
           }
+          this.$emit('loadComplete');
         })
         .catch(() => {
           this.loading = false;
         });
     },
-    reload(param){
-      this.param = Object.assign(this.param,param);
+    reload(param) {
+      this.param = Object.assign(this.param, param);
       this.getData();
     },
     //分页事件回调函数

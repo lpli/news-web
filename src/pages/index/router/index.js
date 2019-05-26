@@ -16,6 +16,9 @@ import Article from '@/components/article'
 import ArticleList from '@/components/article-list'
 import ArticleView from '@/components/article-view'
 import ArticleApprove from '@/components/article-approve'
+import ArticleCategory from '@/components/article-category'
+import CarCategory from '@/components/car-category'
+import CarSelector from '@/components/car-selector'
 Vue.use(Router)
 
 export default new Router({
@@ -71,6 +74,15 @@ export default new Router({
       path: '/article/approveList',
       component: ArticleList,
       name:'approve'
+    },{
+      path: '/category/list',
+      component: ArticleCategory,
+    },{
+      path: '/carCategory/list',
+      component: CarCategory,
+    },{
+      path: '/carCategory/select',
+      component: CarSelector,
     },{
       path: '/404',
       component: NotFound
