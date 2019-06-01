@@ -8,11 +8,18 @@
         <el-input type="hidden" v-model="article.status"></el-input>
       </el-form-item>
       <el-form-item prop="title" label="标题" class="article-title">
-        <el-input type="text"  v-model="article.title" placeholder="请输入标题（最多30个字）" :maxlength="30" >
-          <span slot="append">
-            {{article.title.length}}/30
-          </span>
+        <el-input type="text" v-model="article.title" placeholder="请输入标题（最多30个字）" :maxlength="30">
+          <span slot="append">{{article.title.length}}/30</span>
         </el-input>
+      </el-form-item>
+      <el-form-item prop="articleCategory" label="分类">
+        <el-cascader :props="props" v-model="article.articleCategory"></el-cascader>
+      </el-form-item>
+      <el-form-item prop="carCategory" label="车系">
+        <car-selector @select="selectCategory" ref="carSelector"></car-selector>
+        <el-select v-model="article.carCategory" placeholder="请选择" ref="carCategory">
+          <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="content">
         <editor v-model="article.content" ref="editor" @change="getCover" :height="300"></editor>
@@ -40,12 +47,12 @@
 </template>
 
 <style lang="less" scoped>
-.editor{
-  width:80%;
-  .btn-bar{
+.editor {
+  width: 80%;
+  .btn-bar {
     position: fixed;
     top: 80px;
-    right:10px;
+    right: 10px;
   }
 }
 
@@ -76,25 +83,52 @@
 
 <script>
 import Editor from "@/components/tinymce-editor";
+import CarSelector from "@/components/car-selector";
+let id = 0;
 export default {
   name: "ArticleEditor",
   components: {
-    Editor
+    Editor,
+    CarSelector
   },
   data() {
+    let that = this;
     return {
       loading: false,
-      titleLength:0,
+      titleLength: 0,
       article: {
         id: "",
         title: "",
         status: 0,
         content: "",
         coverType: 1,
+        articleCategory: null,
+        carCategory: null,
         coverList: []
       },
       coverList: [],
       id: "editor",
+      options: [],
+      props: {
+        checkStrictly: true,
+        emitPath: false,
+        label: "name",
+        value: "id",
+        lazy: true,
+        lazyLoad(node, resolve) {
+          const { level, value } = node;
+          that.$http
+            .get("/category/list", {
+              level: level + 1,
+              id: level > 0 ? value : ""
+            })
+            .then(json => {
+              if (json.code == 1) {
+                resolve(json.data);
+              }
+            });
+        }
+      },
       rules: {
         title: [
           {
@@ -116,6 +150,20 @@ export default {
             trigger: ["blur", "change"],
             message: "请选择"
           }
+        ],
+        articleCategory: [
+          {
+            required: true,
+            trigger: ["blur", "change"],
+            message: "请选择"
+          }
+        ],
+        carCategory: [
+          {
+            required: true,
+            trigger: ["blur", "change"],
+            message: "请选择"
+          }
         ]
       }
     };
@@ -127,8 +175,28 @@ export default {
           this.article = json.data;
           this.article.content = this.$util.toHtml(this.article.content);
           this.coverList = this.article.coverList;
+          if (this.article.carCategory) {
+            this.$nextTick(() => {
+              this.$http
+                .get("/carClass/" + this.article.carCategory)
+                .then(json => {
+                  if (json.code == 1) {
+                    this.$refs.carSelector.select(json.data);
+                  }
+                });
+            });
+          }
         }
       });
+    },
+    selectCategory(item) {
+      if (item) {
+        this.$http.get("/carClass/list", { model: item.model }).then(json => {
+          if (json.code == 1) {
+            this.options = json.data;
+          }
+        });
+      }
     },
     draft() {
       this.$refs.articleForm.validate(valid => {
@@ -180,7 +248,6 @@ export default {
         this.coverList = list;
       }
     }
-   
   },
 
   computed: {},

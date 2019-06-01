@@ -57,6 +57,7 @@ export default {
   name: "table-list",
   data() {
     return {
+      params: {},
       pageNo: 1,
       total: 0,
       pageSize: 10,
@@ -105,6 +106,7 @@ export default {
     }
   },
   mounted() {
+    this.params = Object.assign({}, this.param);
     this.getData();
   },
   computed: {
@@ -117,18 +119,18 @@ export default {
   methods: {
     getData() {
       if (this.showPage) {
-        this.param["pageNo"] = this.pageNo;
-        this.param["pageSize"] = this.pageSize;
+        this.params["pageNo"] = this.pageNo;
+        this.params["pageSize"] = this.pageSize;
       }
       this.loading = true;
-      this.$http[this.method](this.url, this.param)
+      this.$http[this.method](this.url, this.params)
         .then(json => {
           this.loading = false;
           if (json.code == "1") {
             if (this.showPage) {
               this.total = json.data.total;
               this.rows = json.data.records;
-            }else{
+            } else {
               this.rows = json.data;
             }
           } else {
@@ -136,14 +138,18 @@ export default {
               message: "数据加载异常"
             });
           }
-          this.$emit('loadComplete');
+          this.$emit("loadComplete");
         })
         .catch(() => {
           this.loading = false;
         });
     },
     reload(param) {
-      this.param = Object.assign(this.param, param);
+      if (typeof param == "undefined") {
+        this.params = {};
+      } else {
+        this.params = Object.assign(this.params, param);
+      }
       this.getData();
     },
     //分页事件回调函数

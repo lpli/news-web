@@ -1,5 +1,6 @@
 <template>
   <el-container :class="isCollapse?'collaspe':''  ">
+    
     <el-aside>
       <sider-menu :menuList="menuList" :collapse="isCollapse"></sider-menu>
     </el-aside>
@@ -18,12 +19,14 @@
           <router-view/>
         </el-main>
       </el-scrollbar>
+       
     </el-container>
+    <el-backtop target=".main-scrollbar .el-scrollbar__wrap" :bottom="100" :right="100">up</el-backtop>
   </el-container>
 </template>
 <style lang="less">
-@hbgcolor:#409EFF;
-@bgcolor: #409EFF;
+@hbgcolor: #409eff;
+@bgcolor: #409eff;
 @tcolor: #fff;
 .aside-op {
   line-height: 60px;
@@ -49,6 +52,7 @@
   }
   .sidebar-container {
     .sidebar-title {
+      width:65px;
       .sidebar-title-text {
         display: none;
       }
@@ -94,6 +98,42 @@
 
 .el-menu {
   border: none;
+  padding-right:17px;
+  .el-menu-item{
+    width: 210px;
+  }
+  .el-submenu{
+    width: 210px;
+  }
+}
+.el-menu--collapse.el-menu{
+  .el-menu-item{
+    width: auto;
+  }
+  .el-submenu{
+    width: auto;
+  }
+}
+.el-menu--popup.el-menu{
+  padding-right:0px;
+  .el-menu-item{
+    &:hover,&:focus{
+      background: @bgcolor;
+      color:@tcolor;
+      &>i{
+        color:@tcolor;
+      }
+    }
+  }
+  .el-submenu__title{
+    &:hover,&:focus{
+      background: @bgcolor;
+      color:@tcolor;
+      &>i{
+        color:@tcolor;
+      }
+    }
+  }
 }
 
 body {
@@ -115,9 +155,12 @@ html {
 .main-scrollbar {
   height: 100%;
   .el-scrollbar__wrap {
-    overflow-x: hidden;
-    .el-main {
+    overflow: auto;
+    .el-scrollbar__view {
       height: 100%;
+      .el-main {
+        height: 100%;
+      }
     }
   }
 }
@@ -165,7 +208,7 @@ html {
       }
     }
     .el-scrollbar__wrap {
-      overflow-x: hidden;
+      overflow: auto;
     }
   }
 }
@@ -178,14 +221,15 @@ html {
       color: @tcolor;
     }
   }
-  .el-menu-item:focus, .el-menu-item:hover,.el-menu-item.is-active{
+  .el-menu-item:focus,
+  .el-menu-item:hover,
+  .el-menu-item.is-active {
     background: @bgcolor;
     color: @tcolor;
     i {
       color: @tcolor;
     }
   }
-  
 }
 </style>
 

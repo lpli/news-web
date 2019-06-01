@@ -1,7 +1,13 @@
 <template>
-  <div class="car-selector" ref="car-selector">
-    <el-input type="text" suffix-icon="el-icon-third-down"></el-input>
-    <div class="category-div">
+  <div class="car-selector" ref="car-selector" @click="open($event)" @blur="close">
+    <el-input
+      type="text"
+      :suffix-icon="icon"
+      :value="text"
+      placeholder="请选择车系"
+      @change="$emit('input',selected)"
+    ></el-input>
+    <div :class="categoryClass" @click.stop="stop">
       <div class="letter-div">
         <div
           class="letter-i"
@@ -20,7 +26,12 @@
         <div class="model-i">全部车系</div>
         <div v-for="k in Object.keys(models)" :key="k">
           <div class="model-c">{{k}}</div>
-          <div class="model-t" v-for="item in models[k]" :key="item.model">{{item.model}}</div>
+          <div
+            class="model-t"
+            v-for="item in models[k]"
+            :key="item.model"
+            @click="select(item)"
+          >{{item.model}}</div>
         </div>
       </div>
     </div>
@@ -28,10 +39,17 @@
 </template>
 <style lang="less" scoped>
 .car-selector {
-  height: 1000px;
-  position: relative;
+  display: inline-block;
+  height: 40px;
+  cursor: pointer;
   .category-div {
+    background: #fff;
+    display: none;
+    &.open {
+      display: block;
+    }
     position: absolute;
+    z-index: 1000;
     border: 1px solid #ccc;
     height: 520px;
     width: 230px;
@@ -117,6 +135,9 @@
 export default {
   data() {
     return {
+      selected: {},
+      icon: "el-icon-third-down",
+      categoryClass: "category-div",
       brandList: [],
       modelList: [],
       showModel: false,
@@ -150,10 +171,35 @@ export default {
       ]
     };
   },
+  model: {
+    prop: "category",
+    event: "input"
+  },
+  props: {
+    category: {
+      type: Object,
+      default() {
+        return {};
+      }
+    }
+  },
+  beforeMount() {
+    
+  },
   mounted() {
     this.getBrand();
+    this.$watch("category", (nVal, oVal) => {
+      this.selected = nVal;
+      this.$emit("select", this.selected);
+    });
   },
   computed: {
+    text() {
+      if (!this.selected) {
+        return "";
+      }
+      return this.selected.model;
+    },
     brands() {
       let brands = {};
       this.brandList.forEach(item => {
@@ -176,6 +222,11 @@ export default {
     }
   },
   methods: {
+    clear() {
+      this.selected = null;
+      this.close();
+      this.$emit("select", null);
+    },
     getBrand() {
       this.$http.get("/carBrand/list").then(json => {
         if (json.code == "1") {
@@ -199,6 +250,33 @@ export default {
           this.modelList = json.data;
         }
       });
+    },
+    stop() {},
+    open(event) {
+      if (
+        event.target.tagName.toLowerCase() == "i" &&
+        event.target.classList.contains("el-input__clear")
+      ) {
+        event.stopPropagation();
+        this.clear();
+        return;
+      }
+      if (this.icon == "el-icon-third-up") {
+        this.categoryClass = "category-div";
+        this.icon = "el-icon-third-down";
+      } else {
+        this.categoryClass = "category-div open";
+        this.icon = "el-icon-third-up";
+      }
+    },
+    close() {
+      this.categoryClass = "category-div";
+      this.icon = "el-icon-third-down";
+    },
+    select(item) {
+      this.selected = item;
+      this.$emit("select", item);
+      this.close();
     }
   }
 };
