@@ -19,13 +19,24 @@
           <el-input v-model="opsForm.id"></el-input>
         </el-form-item>
         <el-form-item prop="name" label="操作名">
-          <el-input v-model="opsForm.name"></el-input>
+           <el-autocomplete v-model="opsForm.name" :fetch-suggestions="suggest" @select="selectApi">
+            <template slot-scope="{ item }">
+              <div class="name">{{ item.name }}</div>
+              <span class="addr">{{ item.method }}</span>
+              <span class="addr">{{ item.url }}</span>
+            </template>
+          </el-autocomplete>
         </el-form-item>
         <el-form-item prop="code" label="编码">
           <el-input v-model="opsForm.code"></el-input>
         </el-form-item>
         <el-form-item prop="url" label="URL">
           <el-input v-model="opsForm.url"></el-input>
+        </el-form-item>
+        <el-form-item prop="method" label="METHOD">
+          <el-select v-model="opsForm.method">
+            <el-option v-for="item in methods" :key="item" :value="item">{{item}}</el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -43,54 +54,68 @@ export default {
   name: "OpsList",
   components: { TableList },
   data() {
-    let checkName = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("名称不能为空"));
-          return;
-       }
-       this.$http.get("/operation/check",{id:this.opsForm.id,name:this.opsForm.name}).then((json)=>{
-          if(json.code == '1'){
+    let checkName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("名称不能为空"));
+        return;
+      }
+      this.$http
+        .get("/operation/check", {
+          id: this.opsForm.id,
+          name: this.opsForm.name
+        })
+        .then(json => {
+          if (json.code == "1") {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
-    let checkCode = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("编码不能为空"));
-          return;
-       }
-       this.$http.get("/operation/check",{id:this.opsForm.id,code:this.opsForm.code}).then((json)=>{
-          if(json.code == '1'){
+    let checkCode = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("编码不能为空"));
+        return;
+      }
+      this.$http
+        .get("/operation/check", {
+          id: this.opsForm.id,
+          code: this.opsForm.code
+        })
+        .then(json => {
+          if (json.code == "1") {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
-    let checkUrl = (rule,value,callback)=>{
-       if(!value){
-          callback(new Error("URL不能为空"));
-          return;
-       }
-       this.$http.get("/operation/check",{id:this.opsForm.id,url:this.opsForm.url}).then((json)=>{
-          if(json.code == '1'){
+    let checkUrl = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("URL不能为空"));
+        return;
+      }
+      this.$http
+        .get("/operation/check", { id: this.opsForm.id, url: this.opsForm.url })
+        .then(json => {
+          if (json.code == "1") {
             callback();
-          }else{
+          } else {
             callback(new Error(json.msg));
           }
-       })
+        });
     };
     return {
       title: "编辑",
       showDialog: false,
+      methods: ["GET", "POST", "PUT", "DELETE"],
       opsForm: {
         id: "",
         name: "",
         code: "",
         url: "",
-        pid: null
+        pid: null,
+        method: ""
       },
       url: "/operation/pageList",
       columns: [
@@ -110,6 +135,10 @@ export default {
         {
           label: "URL",
           prop: "url"
+        },
+        {
+          label: "METHOD",
+          prop: "method"
         }
       ],
       showIndex: false,
@@ -126,7 +155,7 @@ export default {
             message: "长度为2~100",
             trigger: ["blur", "change"]
           },
-           {
+          {
             validator: checkName,
             trigger: ["blur", "change"]
           }
@@ -142,7 +171,7 @@ export default {
             message: "英文字母加数字的6~20位字符串",
             trigger: ["blur", "change"]
           },
-           {
+          {
             validator: checkCode,
             trigger: ["blur", "change"]
           }
@@ -159,8 +188,15 @@ export default {
             message: "URL格式不正确",
             trigger: ["blur", "change"]
           },
-           {
+          {
             validator: checkUrl,
+            trigger: ["blur", "change"]
+          }
+        ],
+        method: [
+          {
+            required: true,
+            message: "请选择",
             trigger: ["blur", "change"]
           }
         ]
@@ -168,6 +204,16 @@ export default {
     };
   },
   methods: {
+    selectApi(ev){
+       Object.assign(this.opsForm,ev);
+    },
+    suggest(query, cb) {
+      this.$http.get("/apiList").then(json => {
+        if (json.code == 1) {
+          cb(json.data);
+        }
+      });
+    },
     edit(row) {
       this.showDialog = true;
       this.opsForm = Object.assign({}, row);
@@ -178,7 +224,8 @@ export default {
         id: "",
         name: "",
         code: "",
-        url: ""
+        url: "",
+        method: ""
       };
     },
     del(row) {

@@ -141,11 +141,11 @@ export default {
       tabList: [
         {
           groupName: "全部图片",
-          groupId: -1,
+          groupId: 0,
           total: 0
         }
       ],
-      groupId: -1,
+      groupId: 0,
       imgList: [],
       uploadData: {},
       maxChecked: 10,
@@ -216,7 +216,7 @@ export default {
         }
       });
       this.$nextTick(() => {
-        this.listImage(-1);
+        this.listImage(0);
       });
     },
     listImage(groupId) {
@@ -224,7 +224,7 @@ export default {
       this.uploadData = {
         groupId: groupId
       };
-      let url = groupId == -1 ? "/image/all" : "/image/" + groupId + "/list";
+      let url = groupId == 0 ? "/image/all" : "/image/" + groupId + "/list";
       this.$http.get(url).then(json => {
         if (json.code == 1) {
           this.imgList = json.data;

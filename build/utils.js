@@ -54,13 +54,44 @@ exports.cssLoaders = function (options) {
     }
   }
 
+  function resolveResouce(name) {
+    return path.resolve(__dirname, '../src/assets/' + name);
+  }
+
+  //导入全局sass mixin function等
+  function generateLessResourceLoader(){
+    var loaders = [
+      cssLoader,
+      //'postcss-loader',
+      'less-loader',
+      {
+        loader:'sass-resources-loader',
+        options: {
+          //需要一个全局路径
+          resources: [resolveResouce('style/variables.less')]
+        }
+      }
+    ]
+    if(options.extract){
+      return ExtractTextPlugin.extract({
+        use:loaders,
+        fallback: 'vue-style-loader'
+      })
+    }else{
+      return ['vue-style-loader'].concat(loaders)
+    }
+  }
+
   // https://vue-loader.vuejs.org/en/configurations/extract-css.html
   return {
     css: generateLoaders(),
     postcss: generateLoaders(),
-    less: generateLoaders('less'),
+    less: generateLessResourceLoader(),
     sass: generateLoaders('sass', { indentedSyntax: true }),
     scss: generateLoaders('sass'),
+    sassresources:generateLoaders('sass-resources',{
+      resources:[path.resolve(__dirname, '../src/assets/style/variables.less'),]
+    }),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')
   }

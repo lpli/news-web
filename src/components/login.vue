@@ -12,13 +12,7 @@
         </el-carousel-item>
       </el-carousel>
       <el-card class="box-card login">
-        <el-form
-          class="login-form"
-          ref="login-form"
-          :model="loginForm"
-          :rules="rules"
-          status-icon
-        >
+        <el-form class="login-form" ref="login-form" :model="loginForm" :rules="rules" status-icon>
           <el-form-item prop="username">
             <el-input
               type="text"
@@ -140,9 +134,11 @@ export default {
       this.$refs["login-form"].validate(valid => {
         if (valid) {
           this.$http.post("/login", this.loginForm).then(json => {
-            this.$storage.put("token", json.data.token);
-            this.$storage.putObj("userInfo", json.data);
-            this.$router.push("/admin");
+            if (json.code == 1) {
+              this.$storage.put("token", json.data.token);
+              this.$storage.putObj("userInfo", json.data);
+              this.$router.push("/admin");
+            } 
           });
         } else {
           return false;

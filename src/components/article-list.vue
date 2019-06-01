@@ -1,17 +1,53 @@
 <template>
   <div class="article-list">
-    <div class="filter" v-if="name == 'myArticle'">
-      <span class="item">全部</span>
-      <span class="item">草稿</span>
-      <span class="item">审核中</span>
-      <span class="item">已发布</span>
-      <span class="item">审核未通过</span>
+    <div class="filter">
+      <el-cascader
+        :props="props"
+        v-model="articleCategory"
+        size="small"
+        @change="search"
+        clearable
+        placeholder="文章分类"
+      ></el-cascader>
+      <el-select v-model="queryType" size="small" class="query-type">
+        <el-option
+          v-for="type in queryTypes"
+          :key="type.value"
+          :label="type.label"
+          :value="type.value"
+        ></el-option>
+      </el-select>
+      <el-input
+        v-model="queryValue"
+        size="small"
+        class="query-val"
+        suffix-icon="el-icon-third-search"
+        @change="search"
+      ></el-input>
+      <div v-if="name == 'myArticle'" class="status-count">
+        <el-badge class="item" type="primary" @click.native="switchStatus()">
+          <el-button size="small">全部</el-button>
+        </el-badge>
+        <el-badge
+          class="item"
+          v-for="item in statusCount"
+          :key="item.status"
+          :value="item.count"
+          :type="getStatusType(item.status)"
+          @click.native="switchStatus(item.status)"
+        >
+          <el-button size="small">{{item.desc}}</el-button>
+        </el-badge>
+      </div>
     </div>
     <ul v-if="list.length>0">
       <li v-for="item in list" :key="item.id">
         <router-link :to="'/article/view/'+item.id" class="article-link">
           <div class="article-item">
-            <div class="article-title">{{item.title}}</div>
+            <div class="article-title">
+              <label class="category-label">{{item.categoryName||'未分类'}}</label>
+              {{item.title}}
+            </div>
             <div class="article-time">
               <p>
                 <span>更新时间：{{item.updateTime}}</span>
@@ -34,7 +70,12 @@
         </router-link>
         <div class="op-btn">
           <el-button type="text" v-if="item.status == 0" size="mini" @click="toApprove(item)">提交审核</el-button>
-          <el-button type="text" v-if="item.status == 2" size="mini" @click="revert(item)">撤回</el-button>
+          <el-button
+            type="text"
+            v-if="(name=='myArticle'&&item.status == 1 )|| item.status == 2"
+            size="mini"
+            @click="revert(item)"
+          >撤回</el-button>
           <el-button type="text" size="mini" @click="del(item)">删除</el-button>
           <el-button
             type="text"
@@ -60,6 +101,7 @@
       layout="prev, pager, next"
       :total="total"
       :page-size="pageSize"
+      :current-page.sync="pageNo"
       @current-change="changePage"
     ></el-pagination>
   </div>
@@ -69,19 +111,24 @@
 .article-list {
   .filter {
     padding: 10px 10px;
-    background: #f4f4f5;
-    .item {
-      padding: 5px 10px;
+    .status-count {
       display: inline-block;
-      &:nth-child(even) {
-        border-right: 1px solid #e4e7ed;
-        border-left: 1px solid #e4e7ed;
+      .item {
+        margin-right: 15px;
       }
+    }
+
+    .query-type {
+      width: 80px;
+    }
+    .query-val {
+      width: 200px;
     }
   }
   ul {
     padding: 5px 10px;
     list-style: none;
+    margin: 0;
     li {
       margin: 0;
       padding: 20px 15px;
@@ -122,6 +169,17 @@
           font-size: 22px;
           line-height: 22px;
           margin-bottom: 5px;
+          position: relative;
+          .category-label {
+            position: absolute;
+            font-size: 10px;
+            line-height: 12px;
+            right: -50px;
+            border: 1px solid @hbgcolor;
+            color:@hbgcolor;
+            border-radius: 2px;
+            padding: 2px 3px;
+          }
         }
         .article-time {
           color: #999;
@@ -165,18 +223,99 @@ export default {
   name: "ArticleList",
   components: { ArticleView },
   data() {
+    let that = this;
     return {
       list: [],
       pageNo: 1,
       pageSize: 10,
       total: 0,
-      name: ""
+      name: "",
+      status: "",
+      articleCategory: "",
+      props: {
+        checkStrictly: true,
+        emitPath: false,
+        label: "name",
+        value: "id",
+        lazy: true,
+        lazyLoad(node, resolve) {
+          const { level, value } = node;
+          that.getCategory(level, value ? value : "", resolve);
+        }
+      },
+      statusCount: [],
+      queryType: 1,
+      queryTypes: [
+        {
+          label: "标题",
+          value: 1
+        },
+        {
+          label: "作者",
+          value: 2
+        }
+      ],
+      queryValue: ""
     };
   },
   mounted() {
+    this.getStatusCount();
     this.loadData(this.$route.name);
   },
   methods: {
+    getCategory(level, id, callback) {
+      this.$http
+        .get("/category/list", {
+          level: level + 1,
+          id: id
+        })
+        .then(json => {
+          if (json.code == 1) {
+            callback && callback(json.data);
+          }
+        });
+    },
+    search() {
+      this.pageNo = 1;
+      this.loadData(this.$route.name);
+      this.getStatusCount();
+    },
+    getStatusType(status) {
+      let type = "info";
+      switch (status) {
+        case 0:
+          type = "info";
+          break;
+        case 1:
+          type = "warning";
+          break;
+        case 2:
+          type = "success";
+          break;
+        case 3:
+          type = "danger";
+          break;
+      }
+      return type;
+    },
+    switchStatus(status) {
+      this.status = status;
+      this.pageNo = 1;
+      this.loadData(this.$route.name);
+    },
+    getStatusCount() {
+      this.$http
+        .get("/article/statusCount", {
+          queryType: this.queryType,
+          queryValue: this.queryValue,
+          articleCategory: this.articleCategory
+        })
+        .then(json => {
+          if (json.code == 1) {
+            this.statusCount = json.data;
+          }
+        });
+    },
     loadData(name) {
       this.name = name;
       let url = "";
@@ -188,12 +327,17 @@ export default {
       this.$http
         .get(url, {
           pageNo: this.pageNo,
-          pageSize: this.pageSize
+          pageSize: this.pageSize,
+          status: this.status,
+          queryType: this.queryType,
+          queryValue: this.queryValue,
+          articleCategory: this.articleCategory
         })
         .then(json => {
           if (json.code == 1) {
             this.total = json.data.total;
             this.list = json.data.records;
+            this.pageNo = json.data.current;
           }
         });
     },

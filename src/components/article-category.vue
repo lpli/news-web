@@ -38,7 +38,7 @@
           <el-input v-model="categoryForm.code"></el-input>
         </el-form-item>
         <el-form-item prop="level" label="级别">
-          <el-input-number v-model="categoryForm.level" :min="1"></el-input-number>
+          <el-input-number v-model="categoryForm.level" :min="1" @change="changeLevel"></el-input-number>
         </el-form-item>
         <el-form-item prop="pid" label="上级栏目">
           <el-select
@@ -215,6 +215,11 @@ export default {
     },
     complete(){
         this.options = this.$refs.categoryTable.rows;
+    },
+    changeLevel(){
+      this.options = this.$refs.categoryTable.rows.filter(item=>{
+        return item.level == this.categoryForm.level -1;
+      })
     },
     remoteMethod(query) {
       if (query) {

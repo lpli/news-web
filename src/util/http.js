@@ -23,12 +23,15 @@ MyPlugin.install = function (Vue, options) {
   }, function (error) {
     let code = error.response.status;
     if (code === 401) {
-      Message.error({
-        showClose: true,
-        message: error.response.data.msg,
-        type: 'error'
-      });
-      router.push('/login');
+     let timeout =  setTimeout(()=>{
+        Message.error({
+          showClose: true,
+          message: error.response.data.msg
+        });
+        router.push('/login');
+        clearTimeout(timeout);
+      },500)
+     
     } else if (code === 403) {
       Message.error({
         showClose: true,

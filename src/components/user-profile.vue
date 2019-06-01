@@ -8,6 +8,7 @@
     <ul class="user-ul">
       <li class="user-li">{{userName}}</li>
       <li class="user-seprator"></li>
+      <li class="user-li" @click="toSetting">账户设置</li>
       <li class="user-li" @click="logout">退出</li>
     </ul>
     <div class="icon-wrapper" slot="reference">
@@ -69,18 +70,25 @@ export default {
   name: "user-profile",
   data() {
     return {
-      userName:''
+      userName: ""
     };
   },
-  props: {
+  props: {},
+  mounted() {
+    let userInfo = this.$storage.getObj("userInfo");
+    if (userInfo) {
+      this.userName = userInfo.userName;
+    }
   },
-  mounted(){
-    this.userName = this.$storage.getObj("userInfo").userName;
-  },
-  methods:{
-    logout(){
-      this.$http.post('/logout').then(()=>{
-          this.$router.push('/login');
+  methods: {
+    logout() {
+      this.$http.post("/logout").then(() => {
+        this.$router.push("/login");
+      });
+    },
+    toSetting() {
+      this.$router.push({
+        path: "/user/setting"
       });
     }
   }
