@@ -132,7 +132,8 @@ export default {
 .el-menu {
   border: none;
   padding-right:17px;
-  background-color: #000c17;
+  background-color: @bgcolor !important;
+  border-right-color: @bgcolor !important;
   .el-menu-item{
     width: 210px;
     color:inherit;
@@ -217,6 +218,7 @@ html {
       height: 100%;
       .el-main {
         background-color: #fff;
+        font-size:14px;
       }
     }
   }

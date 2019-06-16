@@ -199,7 +199,6 @@
   }
   .no-records {
     text-align: center;
-    background-color: #f5f7fa;
     padding: 15px 0;
     height: 220px;
     i {
